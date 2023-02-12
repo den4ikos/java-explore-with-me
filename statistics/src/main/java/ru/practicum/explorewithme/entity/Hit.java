@@ -7,6 +7,7 @@ import ru.practicum.explorewithme.annotation.IpCheckConstraint;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -26,4 +27,6 @@ public class Hit {
 
     @IpCheckConstraint
     private String ip;
+
+    private LocalDateTime timestamp;
 }

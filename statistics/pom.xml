@@ -11,7 +11,7 @@
 	<artifactId>explore-with-me-statistics</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<name>ExploreWithMe Statistics</name>
+	<name>Statistics</name>
 
 	<dependencies>
 		<dependency>
@@ -58,11 +58,11 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>jakarta.validation</groupId>
+			<artifactId>jakarta.validation-api</artifactId>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>
