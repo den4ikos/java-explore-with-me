@@ -14,8 +14,6 @@ public class IpValidator implements ConstraintValidator<IpCheckConstraint, Strin
 
     @Override
     public boolean isValid(String field, ConstraintValidatorContext cxt) {
-        System.out.println("field " + field);
-        System.out.println("cxt " + cxt);
         if (field == null) return false;
 
         String zeroTo255 = "(\\d{1,2}|(0|1)\\" + "d{2}|2[0-4]\\d|25[0-5])";

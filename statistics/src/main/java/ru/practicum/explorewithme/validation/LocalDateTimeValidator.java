@@ -19,7 +19,8 @@ public class LocalDateTimeValidator implements ConstraintValidator<LocalDateTime
 
     @Override
     public boolean isValid(String field, ConstraintValidatorContext cxt) {
-//        String dateTime = URLDecoder.decode(cxt.toString(), StandardCharsets.UTF_8);
+        String dateTime = URLDecoder.decode(cxt.toString(), StandardCharsets.UTF_8);
+        System.out.println("AZZA");
         return false;
     }
 }
