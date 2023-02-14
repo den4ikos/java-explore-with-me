@@ -10,5 +10,5 @@ import lombok.*;
 public class StatisticDto {
     private String app;
     private String uri;
-    private Long hit;
+    private Long hits;
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.dto.HitDto;
+import ru.practicum.explorewithme.dto.HitDtoInterface;
 import ru.practicum.explorewithme.dto.StatisticDto;
 import ru.practicum.explorewithme.entity.Hit;
 import ru.practicum.explorewithme.mapper.HitMapper;
@@ -36,7 +37,7 @@ public class StatisticService implements StatisticServiceInterface {
 
     @Override
     public List<StatisticDto> get(String start, String end, List<String> uris, Boolean unique) {
-        List<HitDto> listDto;
+        List<HitDtoInterface> listDto;
 
         if (Boolean.TRUE.equals(unique)) {
             listDto = calculateUniqueHits(start, end, uris);
@@ -50,7 +51,7 @@ public class StatisticService implements StatisticServiceInterface {
                 .collect(Collectors.toList());
     }
 
-    private List<HitDto> calculateUniqueHits(String start, String end, List<String> uris) {
+    private List<HitDtoInterface> calculateUniqueHits(String start, String end, List<String> uris) {
         log.info("Getting only unique hits...");
         return hitRepository.calculateUniqueHits(
                 uris,
@@ -59,12 +60,15 @@ public class StatisticService implements StatisticServiceInterface {
         );
     }
 
-    private List<HitDto> calculateHits(String start, String end, List<String> uris) {
+    private List<HitDtoInterface> calculateHits(String start, String end, List<String> uris) {
         log.info("Getting all hits...");
-        return hitRepository.calculateHits(
+        List<HitDtoInterface> results =  hitRepository.calculateHits(
                 uris,
                 LocalDateTime.parse(start, DateTimeFormatter.ofPattern(format)),
                 LocalDateTime.parse(end, DateTimeFormatter.ofPattern(format))
         );
+        log.debug("AZAZA");
+        log.info(results.toString());
+        return results;
     }
 }

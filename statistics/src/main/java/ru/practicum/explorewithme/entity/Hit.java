@@ -1,5 +1,6 @@
 package ru.practicum.explorewithme.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,8 +26,8 @@ public class Hit {
     @NotNull(message = "Uri is required!")
     private String uri;
 
-    @IpCheckConstraint
     private String ip;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
 }
