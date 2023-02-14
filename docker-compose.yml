@@ -1,14 +1,23 @@
-version: '3.1'
+version: '3.8'
 services:
   statistics-server:
+    build: statistics
+    image: statistics
+    container_name: explorewithme-stats
+    depends_on:
+      - statistics-db
     ports:
       - "9090:9090"
-
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://statistics-db:5432/stats
+      - POSTGRES_DB=stats
+      - POSTGRES_USER=user1234
+      - POSTGRES_PASSWORD=stats
   statistics-db:
     image: postgres:14-alpine
     container_name: statistics-db
     ports:
-      - "6540:5432"
+      - "6541:5432"
     environment:
       - POSTGRES_DB=stats
       - POSTGRES_USER=user1234
