@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.explorewithme.Constants;
 import ru.practicum.explorewithme.dto.HitDto;
 import ru.practicum.explorewithme.dto.HitDtoInterface;
 import ru.practicum.explorewithme.dto.StatisticDto;
@@ -12,7 +13,7 @@ import ru.practicum.explorewithme.entity.Hit;
 import ru.practicum.explorewithme.mapper.HitMapper;
 import ru.practicum.explorewithme.mapper.StatisticMapper;
 import ru.practicum.explorewithme.repository.HitRepository;
-import ru.practicum.explorewithme.service.interfaces.StatisticServiceInterface;
+import ru.practicum.explorewithme.service.interfaces.StatsService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,10 +24,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class StatisticService implements StatisticServiceInterface {
+public class StatisticService implements StatsService {
     private final HitRepository hitRepository;
-    @Value("${format.date}")
-    private String format;
 
     @Override
     @Transactional
@@ -55,8 +54,8 @@ public class StatisticService implements StatisticServiceInterface {
         log.info("Getting only unique hits...");
         return hitRepository.calculateUniqueHits(
                 uris,
-                LocalDateTime.parse(start, DateTimeFormatter.ofPattern(format)),
-                LocalDateTime.parse(end, DateTimeFormatter.ofPattern(format))
+                LocalDateTime.parse(start, DateTimeFormatter.ofPattern(Constants.dateFormat)),
+                LocalDateTime.parse(end, DateTimeFormatter.ofPattern(Constants.dateFormat))
         );
     }
 
@@ -64,8 +63,8 @@ public class StatisticService implements StatisticServiceInterface {
         log.info("Getting all hits...");
         List<HitDtoInterface> results =  hitRepository.calculateHits(
                 uris,
-                LocalDateTime.parse(start, DateTimeFormatter.ofPattern(format)),
-                LocalDateTime.parse(end, DateTimeFormatter.ofPattern(format))
+                LocalDateTime.parse(start, DateTimeFormatter.ofPattern(Constants.dateFormat)),
+                LocalDateTime.parse(end, DateTimeFormatter.ofPattern(Constants.dateFormat))
         );
         log.debug("AZAZA");
         log.info(results.toString());

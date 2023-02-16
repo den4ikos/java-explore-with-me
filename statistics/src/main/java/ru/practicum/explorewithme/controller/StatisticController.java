@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithme.dto.HitDto;
 import ru.practicum.explorewithme.dto.StatisticDto;
 import ru.practicum.explorewithme.log.LogHelper;
-import ru.practicum.explorewithme.service.interfaces.StatisticServiceInterface;
+import ru.practicum.explorewithme.service.interfaces.StatsService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.Map;
 @RequestMapping
 public class StatisticController {
 
-    private final StatisticServiceInterface statisticService;
+    private final StatsService statisticService;
 
     @PostMapping(value = "/hit")
     public HitDto hit(@RequestBody HitDto hitDto, HttpServletRequest request) {

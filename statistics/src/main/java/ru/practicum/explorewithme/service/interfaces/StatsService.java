@@ -5,7 +5,7 @@ import ru.practicum.explorewithme.dto.StatisticDto;
 
 import java.util.List;
 
-public interface StatisticServiceInterface {
+public interface StatsService {
     HitDto create(HitDto hitDto);
     List<StatisticDto> get(String start, String end, List<String> uris, Boolean unique);
 }

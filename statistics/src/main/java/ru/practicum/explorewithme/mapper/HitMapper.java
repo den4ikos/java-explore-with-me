@@ -4,6 +4,7 @@ import ru.practicum.explorewithme.dto.HitDto;
 import ru.practicum.explorewithme.entity.Hit;
 
 public class HitMapper {
+
     public static Hit toHit(HitDto hitDto) {
         Hit hit = new Hit();
         hit.setApp(hitDto.getApp());
