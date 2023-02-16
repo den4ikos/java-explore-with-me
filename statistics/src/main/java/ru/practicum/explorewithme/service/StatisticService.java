@@ -6,18 +6,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.Constants;
+import ru.practicum.explorewithme.dto.AppDto;
 import ru.practicum.explorewithme.dto.HitDto;
 import ru.practicum.explorewithme.dto.HitDtoInterface;
 import ru.practicum.explorewithme.dto.StatisticDto;
+import ru.practicum.explorewithme.entity.App;
 import ru.practicum.explorewithme.entity.Hit;
+import ru.practicum.explorewithme.mapper.AppMapper;
 import ru.practicum.explorewithme.mapper.HitMapper;
 import ru.practicum.explorewithme.mapper.StatisticMapper;
+import ru.practicum.explorewithme.repository.AppRepository;
 import ru.practicum.explorewithme.repository.HitRepository;
 import ru.practicum.explorewithme.service.interfaces.StatsService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,12 +31,22 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class StatisticService implements StatsService {
     private final HitRepository hitRepository;
+    private final AppRepository appRepository;
 
     @Override
     @Transactional
     public HitDto create(HitDto hitDto) {
-        Hit hit = HitMapper.toHit(hitDto);
-        return HitMapper.toDto(hitRepository.save(hit));
+        Optional<App> app = appRepository.findTopByName(hitDto.getApp());
+        App appNew;
+        if (app.isEmpty()) {
+            Long appId = appRepository.saveApp(hitDto.getApp());
+            appNew = appRepository.findById(appId).get();
+        } else {
+            appNew = app.get();
+        }
+
+        Hit hit = HitMapper.toHit(hitDto, AppMapper.toDto(appNew));
+        return HitMapper.toDto(hitRepository.save(hit), appNew);
     }
 
     @Override
@@ -66,7 +81,6 @@ public class StatisticService implements StatsService {
                 LocalDateTime.parse(start, DateTimeFormatter.ofPattern(Constants.dateFormat)),
                 LocalDateTime.parse(end, DateTimeFormatter.ofPattern(Constants.dateFormat))
         );
-        log.debug("AZAZA");
         log.info(results.toString());
         return results;
     }

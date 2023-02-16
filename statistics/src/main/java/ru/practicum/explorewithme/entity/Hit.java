@@ -22,7 +22,8 @@ public class Hit {
     private Long id;
 
     @NotNull(message = "App is required!")
-    private String app;
+    @Column(name = "app_id")
+    private Long appId;
 
     @NotNull(message = "Uri is required!")
     private String uri;

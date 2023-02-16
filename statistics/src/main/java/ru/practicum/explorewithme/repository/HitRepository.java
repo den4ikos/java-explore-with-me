@@ -12,9 +12,9 @@ import java.util.List;
 
 @Repository
 public interface HitRepository extends JpaRepository<Hit, Long> {
-    @Query(value = "SELECT app AS app, uri AS uri, COUNT(DISTINCT ip) AS hits FROM Hit WHERE uri IN :uris AND timestamp >= :start AND timestamp <= :end GROUP BY app, uri ORDER BY hits DESC")
+    @Query(value = "SELECT a.name AS app, h.uri AS uri, COUNT(DISTINCT h.ip) AS hits FROM Hit h LEFT JOIN App a ON (h.appId = a.id) WHERE h.uri IN :uris AND h.timestamp >= :start AND h.timestamp <= :end GROUP BY app, uri ORDER BY hits DESC")
     List<HitDtoInterface> calculateUniqueHits(@Param("uris") List<String> uris, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    @Query(value = "SELECT app AS app, uri AS uri, COUNT(ip) AS hits FROM Hit WHERE uri IN :uris AND timestamp >= :start AND timestamp <= :end GROUP BY app, uri ORDER BY hits DESC")
+    @Query(value = "SELECT a.name AS app, h.uri AS uri, COUNT(h.ip) AS hits FROM Hit h LEFT JOIN App a ON (h.appId = a.id) WHERE h.uri IN :uris AND h.timestamp >= :start AND h.timestamp <= :end GROUP BY app, uri ORDER BY hits DESC")
     List<HitDtoInterface> calculateHits(@Param("uris") List<String> uris, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }
