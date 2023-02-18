@@ -7,6 +7,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithmemain.dto.CategoryDto;
+import ru.practicum.explorewithmemain.entity.Category;
+import ru.practicum.explorewithmemain.exception.NotFoundException;
 import ru.practicum.explorewithmemain.helper.PaginationHelper;
 import ru.practicum.explorewithmemain.mapper.CategoryMapper;
 import ru.practicum.explorewithmemain.repository.CategoryRepository;
@@ -32,5 +34,13 @@ public class CategoryServiceImpl implements CategoryService {
                 .stream()
                 .map(categoryMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public CategoryDto getById(Long id) {
+        Category category = categoryRepository
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException("Category with id " + id + " not found"));
+        return categoryMapper.toDto(category);
     }
 }

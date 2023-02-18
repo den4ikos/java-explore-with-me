@@ -1,10 +1,7 @@
 package ru.practicum.explorewithmemain.controller;
 
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithmemain.dto.CategoryDto;
 import ru.practicum.explorewithmemain.helper.LogHelper;
 import ru.practicum.explorewithmemain.service.interfaces.CategoryService;
@@ -34,5 +31,15 @@ public class CategoryController {
         );
 
         return categoryService.get(from, size);
+    }
+
+    @GetMapping(value = "/{categoryId}")
+    public CategoryDto getById(@PathVariable Long categoryId, HttpServletRequest request) {
+        LogHelper.dump(
+                Map.of("categoryId", categoryId),
+                request
+        );
+
+        return categoryService.getById(categoryId);
     }
 }
