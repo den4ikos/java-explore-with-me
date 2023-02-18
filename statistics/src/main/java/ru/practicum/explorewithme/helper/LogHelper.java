@@ -1,4 +1,4 @@
-package ru.practicum.explorewithme.log;
+package ru.practicum.explorewithme.helper;
 
 import lombok.extern.slf4j.Slf4j;
 
