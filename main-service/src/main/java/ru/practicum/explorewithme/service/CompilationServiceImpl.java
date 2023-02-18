@@ -1,5 +1,6 @@
 package ru.practicum.explorewithme.service;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -16,11 +17,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Transactional(readOnly = true)
 public class CompilationServiceImpl implements CompilationService {
-    private final CompilationRepository compilationRepository;
-    private final PaginationHelper paginationHelper;
-    private final CompilationMapper compilationMapper;
+    private CompilationRepository compilationRepository;
+    private PaginationHelper paginationHelper;
+    private CompilationMapper compilationMapper;
+
     @Override
     public List<CompilationDto> get(Boolean pinned, int from, int size) {
         Pageable pageable = paginationHelper.getPagination(from, size, "id", Sort.Direction.DESC);

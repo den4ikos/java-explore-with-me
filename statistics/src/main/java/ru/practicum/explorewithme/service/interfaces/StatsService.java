@@ -1,6 +1,5 @@
 package ru.practicum.explorewithme.service.interfaces;
 
-import ru.practicum.explorewithme.dto.AppDto;
 import ru.practicum.explorewithme.dto.HitDto;
 import ru.practicum.explorewithme.dto.StatisticDto;
 

@@ -1,6 +1,7 @@
 package ru.practicum.explorewithme.service;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.explorewithme.Constants;
 import ru.practicum.explorewithme.client.StatisticClient;
@@ -15,8 +16,9 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class StatisticServiceImpl implements StatisticService {
-    private final StatisticClient statisticClient;
+    private StatisticClient statisticClient;
 
     @Override
     public Long countViews(String uri) {

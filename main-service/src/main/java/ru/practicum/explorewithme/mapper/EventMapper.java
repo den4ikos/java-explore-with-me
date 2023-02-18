@@ -1,6 +1,7 @@
 package ru.practicum.explorewithme.mapper;
 
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.practicum.explorewithme.dto.CategoryDto;
 import ru.practicum.explorewithme.dto.EventShortDto;
 import ru.practicum.explorewithme.dto.UserShortDto;
@@ -14,6 +15,7 @@ import ru.practicum.explorewithme.service.interfaces.StatisticService;
 
 import java.util.List;
 
+@Component
 @AllArgsConstructor
 public class EventMapper {
     private final RequestService requestService;
