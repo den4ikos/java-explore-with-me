@@ -41,4 +41,10 @@ public class ErrorHandlerController {
     public Map<String, String> handleNotFoundException(final NotFoundException e) {
         return Map.of("error", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(BAD_REQUEST)
+    public Map<String, String> handleBadRequestException(final BadRequestException e) {
+        return Map.of("error", e.getMessage());
+    }
 }

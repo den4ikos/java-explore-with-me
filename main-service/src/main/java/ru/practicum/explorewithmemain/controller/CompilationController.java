@@ -1,6 +1,6 @@
 package ru.practicum.explorewithmemain.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithmemain.dto.CompilationDto;
 import ru.practicum.explorewithmemain.helper.LogHelper;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping(value = "/compilations")
 public class CompilationController {
     private final CompilationService compilationService;
@@ -27,7 +27,7 @@ public class CompilationController {
         HttpServletRequest request
     ) {
         LogHelper.dump(
-                Map.of("pinned", pinned, "from", from, "size", size),
+                Map.of("pinned", null == pinned ? "" : pinned, "from", from, "size", size),
                 request
         );
 
