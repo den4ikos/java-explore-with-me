@@ -1,11 +1,15 @@
 package ru.practicum.explorewithmemain.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.explorewithmemain.Constants;
 import ru.practicum.explorewithmemain.dto.CompilationDto;
+import ru.practicum.explorewithmemain.dto.NewCompilationDto;
 import ru.practicum.explorewithmemain.entity.Compilation;
+import ru.practicum.explorewithmemain.exception.AlreadyExistsException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
 import ru.practicum.explorewithmemain.mapper.CompilationMapper;
 import ru.practicum.explorewithmemain.repository.CompilationRepository;
@@ -42,5 +46,15 @@ public class CompilationServiceImpl implements CompilationService {
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Compilation with id: " + id + " not found"));
         return compilationMapper.toDto(compilation);
+    }
+
+    @Override
+    public CompilationDto create(NewCompilationDto newCompilationDto) {
+        try {
+            Compilation compilation = compilationRepository.save(compilationMapper.newCompilationDtoToCompilation(newCompilationDto));
+            return compilationMapper.toDto(compilation);
+        } catch (DataIntegrityViolationException e) {
+            throw new AlreadyExistsException(String.format(Constants.alreadyExists, "Compilation", newCompilationDto.getTitle()));
+        }
     }
 }

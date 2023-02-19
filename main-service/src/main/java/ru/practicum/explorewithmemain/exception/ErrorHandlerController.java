@@ -53,4 +53,10 @@ public class ErrorHandlerController {
     public Map<String, String> handleConflictException(final ConflictException e) {
         return Map.of("error", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(BAD_REQUEST)
+    public Map<String, String> handleAlreadyExistsException(final AlreadyExistsException e) {
+        return Map.of("error", e.getMessage());
+    }
 }

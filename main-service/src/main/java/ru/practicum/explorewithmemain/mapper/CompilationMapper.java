@@ -2,18 +2,24 @@ package ru.practicum.explorewithmemain.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.practicum.explorewithmemain.dto.CompilationDto;
+import ru.practicum.explorewithmemain.dto.NewCompilationDto;
 import ru.practicum.explorewithmemain.entity.Compilation;
+import ru.practicum.explorewithmemain.service.interfaces.EventService;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
 public class CompilationMapper {
     private EventMapper eventMapper;
+    private EventService eventService;
 
     @Autowired
-    public CompilationMapper(EventMapper eventMapper) {
+    public CompilationMapper(EventMapper eventMapper, EventService eventService) {
         this.eventMapper = eventMapper;
+        this.eventService = eventService;
     }
+
     public CompilationDto toDto(Compilation compilation) {
         return new CompilationDto(
                 compilation.getId(),
@@ -28,5 +34,21 @@ public class CompilationMapper {
 
     public Compilation toCompilation(CompilationDto compilationDto) {
         return null;
+    }
+
+    public Compilation newCompilationDtoToCompilation(NewCompilationDto newCompilationDto) {
+        return Compilation
+                .builder()
+                .id(null)
+                .title(newCompilationDto.getTitle())
+                .pinned(newCompilationDto.getPinned())
+                .events(
+                        newCompilationDto.getEvents()
+                                .stream()
+                                .filter(Objects::nonNull)
+                                .map(eventService::getEventById)
+                                .collect(Collectors.toSet())
+                )
+                .build();
     }
 }

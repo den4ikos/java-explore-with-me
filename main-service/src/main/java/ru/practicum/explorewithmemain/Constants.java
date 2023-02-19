@@ -7,4 +7,6 @@ public class Constants {
     public static final String eventConflictMessage = "You can't participate in an unpublished event";
     public static final String userNotFound = "User with id %o not found";
     public static final String eventNotFound = "Event with id %o not found";
+    public static final String alreadyExists = "%s with name '%s' already exists";
+    public static final String notFoundError = "%s not found";
 }
