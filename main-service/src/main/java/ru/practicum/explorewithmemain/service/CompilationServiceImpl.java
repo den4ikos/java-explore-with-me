@@ -2,6 +2,7 @@ package ru.practicum.explorewithmemain.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +56,15 @@ public class CompilationServiceImpl implements CompilationService {
             return compilationMapper.toDto(compilation);
         } catch (DataIntegrityViolationException e) {
             throw new AlreadyExistsException(String.format(Constants.alreadyExists, "Compilation", newCompilationDto.getTitle()));
+        }
+    }
+
+    @Override
+    public void delete(Long compId) {
+        try {
+            compilationRepository.deleteById(compId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(String.format(Constants.notFoundError, "Compilation"));
         }
     }
 }
