@@ -47,4 +47,10 @@ public class ErrorHandlerController {
     public Map<String, String> handleBadRequestException(final BadRequestException e) {
         return Map.of("error", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(CONFLICT)
+    public Map<String, String> handleConflictException(final ConflictException e) {
+        return Map.of("error", e.getMessage());
+    }
 }

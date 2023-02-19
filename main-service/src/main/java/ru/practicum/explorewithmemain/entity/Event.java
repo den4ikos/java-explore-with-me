@@ -3,6 +3,7 @@ package ru.practicum.explorewithmemain.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.explorewithmemain.helper.State;
 import ru.practicum.explorewithmemain.helper.Status;
 
 import javax.persistence.*;
@@ -41,6 +42,6 @@ public class Event {
     @Column(name = "request_moderation")
     private Boolean requestModeration;
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private State state;
     private Long views;
 }

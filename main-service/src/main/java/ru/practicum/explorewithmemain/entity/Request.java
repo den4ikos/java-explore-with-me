@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.explorewithmemain.helper.Status;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -24,4 +25,5 @@ public class Request {
     private User requestor;
     @Enumerated(EnumType.STRING)
     private Status status;
+    private LocalDateTime created;
 }
