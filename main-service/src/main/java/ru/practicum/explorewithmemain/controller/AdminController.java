@@ -27,7 +27,7 @@ public class AdminController {
         return compilationService.create(newCompilationDto);
     }
 
-    @DeleteMapping(value = "/{compId}")
+    @DeleteMapping(value = "/compilations/{compId}")
     public void deleteCompilationByCompId(@PathVariable Long compId, HttpServletRequest request) {
         LogHelper.dump(
                 Map.of("compId", compId),
