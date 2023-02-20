@@ -56,7 +56,7 @@ create table if not exists events
     event_date          timestamp without time zone not null,
     initiator           bigint default null,
     location_id         bigint default null,
-    pid                 boolean,
+    paid                boolean,
     participant_limit   int default 0,
     published_on        timestamp without time zone default null,
     request_moderation  boolean default true,

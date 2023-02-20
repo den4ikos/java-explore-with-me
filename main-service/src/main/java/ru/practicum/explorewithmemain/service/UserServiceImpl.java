@@ -9,16 +9,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithmemain.Constants;
+import ru.practicum.explorewithmemain.dto.EventShortDto;
 import ru.practicum.explorewithmemain.dto.ParticipationRequestDto;
 import ru.practicum.explorewithmemain.dto.UserDto;
 import ru.practicum.explorewithmemain.entity.Event;
 import ru.practicum.explorewithmemain.entity.Request;
 import ru.practicum.explorewithmemain.entity.User;
 import ru.practicum.explorewithmemain.exception.AlreadyExistsException;
+import ru.practicum.explorewithmemain.exception.BadRequestException;
 import ru.practicum.explorewithmemain.exception.ConflictException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
 import ru.practicum.explorewithmemain.helper.State;
 import ru.practicum.explorewithmemain.helper.Status;
+import ru.practicum.explorewithmemain.mapper.EventMapper;
 import ru.practicum.explorewithmemain.mapper.RequestMapper;
 import ru.practicum.explorewithmemain.mapper.UserMapper;
 import ru.practicum.explorewithmemain.repository.EventRepository;
@@ -39,6 +42,7 @@ public class UserServiceImpl implements UserService {
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
+    private final EventMapper eventMapper;
 
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
@@ -101,8 +105,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getUsers(Map<String, Object> params) {
         Long[] ids = (Long[]) params.get("ids");
-        int from = (int) params.get("from");
-        int size = (int) params.get("size");
+        int from = params.containsKey("from") && null != params.get("from") ? (int) params.get("from") : 0;
+        int size = params.containsKey("size") && null != params.get("size") ? (int) params.get("size") : 10;
         Pageable page = PageRequest.of( (from/size), size );
         List<User> users;
         if (null == ids) {
@@ -114,6 +118,27 @@ public class UserServiceImpl implements UserService {
         return users
                 .stream()
                 .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EventShortDto> getUserEvents(Map<String, Object> params) {
+        if (!params.containsKey("userId")) throw new BadRequestException(Constants.badRequest);
+
+        Long userId = (Long) params.get("userId");
+        int from = params.containsKey("from") && null != params.get("from") ? (int) params.get("from") : 0;
+        int size = params.containsKey("size") && null != params.get("size") ? (int) params.get("size") : 10;
+
+        if (!userRepository.isUserExists(userId)) {
+            throw new NotFoundException(String.format(Constants.userNotFound, userId));
+        }
+
+        Pageable page = PageRequest.of( (from/size), size );
+
+        return eventRepository
+                .findByInitiatorId(userId, page)
+                .stream()
+                .map(eventMapper::toShortDto)
                 .collect(Collectors.toList());
     }
 }

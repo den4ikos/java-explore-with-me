@@ -1,5 +1,6 @@
 package ru.practicum.explorewithmemain.service.interfaces;
 
+import ru.practicum.explorewithmemain.dto.EventShortDto;
 import ru.practicum.explorewithmemain.dto.ParticipationRequestDto;
 import ru.practicum.explorewithmemain.dto.UserDto;
 
@@ -17,4 +18,6 @@ public interface UserService {
     void deleteUser(Long userId);
 
     List<UserDto> getUsers(Map<String, Object> params);
+
+    List<EventShortDto> getUserEvents(Map<String, Object> params);
 }
