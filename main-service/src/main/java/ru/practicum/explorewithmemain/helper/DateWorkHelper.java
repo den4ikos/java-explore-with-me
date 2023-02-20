@@ -7,20 +7,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class DateWorkHelper {
-    public static LocalDateTime makeDateFromRequest(Map<String, String> params) {
-        if (params.containsKey("start")) {
-            String start = params.get("start");
-            return null == start
+    public static LocalDateTime makeDateFromRequest(String key, String value) {
+        if (key.equals("start")) {
+            return null == value
                     ? LocalDateTime.now()
-                    : LocalDateTime.parse(start, DateTimeFormatter.ofPattern(Constants.dateFormat));
+                    : LocalDateTime.parse(value, DateTimeFormatter.ofPattern(Constants.dateFormat));
         }
 
-        if (params.containsKey("end")) {
-            String period = params.getOrDefault("plusPeriod", "1");
-            String end = params.get("end");
-            return null == end
-                    ? LocalDateTime.now().plusYears(Integer.parseInt(period))
-                    : LocalDateTime.parse(end, DateTimeFormatter.ofPattern(Constants.dateFormat));
+        if (key.equals("end")) {
+            return null == value
+                    ? LocalDateTime.now().plusYears(1)
+                    : LocalDateTime.parse(value, DateTimeFormatter.ofPattern(Constants.dateFormat));
         }
 
         return LocalDateTime.now();

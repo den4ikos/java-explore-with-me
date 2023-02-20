@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +31,7 @@ public class EventController {
 
     @GetMapping
     public List<EventShortDto> get(
-            @RequestParam(required = false) String text,
+            @RequestParam(required = false, defaultValue = "") String text,
             @RequestParam(required = false) Set<Long> categories,
             @RequestParam(required = false) Boolean paid,
             @RequestParam(required = false) String rangeStart,
@@ -41,19 +42,33 @@ public class EventController {
             @Valid @Positive @RequestParam(defaultValue = "10") int size,
             HttpServletRequest request
             ) {
-        LocalDateTime start = DateWorkHelper.makeDateFromRequest(Map.of("start", rangeStart));
-        LocalDateTime end = DateWorkHelper.makeDateFromRequest(Map.of("end", rangeEnd));
 
-        Map<String, Object> data = Map.of("text", text,
-                "categories", categories,
-                "paid", paid,
-                "rangeStart", start,
-                "rangeEnd", end,
-                "on available", onlyAvailable,
-                "sort", sort,
-                "from", from,
-                "size", size
-        );
+        LocalDateTime start = DateWorkHelper.makeDateFromRequest("start", rangeStart);
+        LocalDateTime end = DateWorkHelper.makeDateFromRequest("end", rangeEnd);
+        Map<String, Object> data = new HashMap<>();
+        if (null != text) {
+            data.put("text", text);
+        }
+
+        if (null != categories) {
+            data.put("categories", categories);
+        }
+
+        if (null != paid) {
+            data.put("paid", paid);
+        }
+
+        data.put("start", start);
+
+        data.put("end", end);
+
+        if (null != sort) {
+            data.put("sort", sort);
+        }
+
+        data.put("onlyAvailable", onlyAvailable);
+        data.put("from", from);
+        data.put("size", size);
 
         LogHelper.dump(data, request);
 

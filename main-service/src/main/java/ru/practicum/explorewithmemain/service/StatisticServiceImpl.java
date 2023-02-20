@@ -69,6 +69,6 @@ public class StatisticServiceImpl implements StatisticService {
                 .timestamp(LocalDateTime.now())
                 .build();
 
-        statisticClient.setEventHit(hitDto);
+//        statisticClient.setEventHit(hitDto);
     }
 }
