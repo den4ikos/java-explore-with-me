@@ -1,12 +1,16 @@
 package ru.practicum.explorewithmemain.service;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.explorewithmemain.Constants;
 import ru.practicum.explorewithmemain.dto.CategoryDto;
+import ru.practicum.explorewithmemain.dto.NewCategoryDto;
 import ru.practicum.explorewithmemain.entity.Category;
+import ru.practicum.explorewithmemain.exception.AlreadyExistsException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
 import ru.practicum.explorewithmemain.mapper.CategoryMapper;
 import ru.practicum.explorewithmemain.repository.CategoryRepository;
@@ -16,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
@@ -37,5 +42,37 @@ public class CategoryServiceImpl implements CategoryService {
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Category with id " + id + " not found"));
         return categoryMapper.toDto(category);
+    }
+
+    @Override
+    @Transactional
+    public CategoryDto create(CategoryDto categoryDto) {
+        try {
+            Category category = categoryRepository.save(categoryMapper.toCategory(categoryDto));
+            return categoryMapper.toDto(category);
+        } catch (DataIntegrityViolationException e) {
+            log.error(e.getMessage());
+            throw new AlreadyExistsException(String.format(Constants.alreadyExists, "Category", categoryDto.getName()));
+        }
+    }
+
+    @Override
+    public CategoryDto mapHelperToDto(NewCategoryDto categoryDto) {
+        return categoryMapper.fromNewCategoryRequestToDto(categoryDto);
+    }
+
+    @Override
+    @Transactional
+    public CategoryDto update(CategoryDto categoryDto) {
+        Category c = categoryRepository
+                .findById(categoryDto.getId())
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Category")));
+
+        if (null != categoryDto.getName()) {
+            c.setName(categoryDto.getName());
+        }
+
+        Category savedCat = categoryRepository.save(c);
+        return categoryMapper.toDto(savedCat);
     }
 }

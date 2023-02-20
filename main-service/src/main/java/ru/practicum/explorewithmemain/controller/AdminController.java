@@ -3,12 +3,10 @@ package ru.practicum.explorewithmemain.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explorewithmemain.dto.CompilationDto;
-import ru.practicum.explorewithmemain.dto.NewCompilationDto;
-import ru.practicum.explorewithmemain.dto.NewUserRequestDto;
-import ru.practicum.explorewithmemain.dto.UserDto;
+import ru.practicum.explorewithmemain.dto.*;
 import ru.practicum.explorewithmemain.helper.LogHelper;
 import ru.practicum.explorewithmemain.mapper.UserMapper;
+import ru.practicum.explorewithmemain.service.interfaces.CategoryService;
 import ru.practicum.explorewithmemain.service.interfaces.CompilationService;
 import ru.practicum.explorewithmemain.service.interfaces.UserService;
 
@@ -25,6 +23,7 @@ import java.util.Map;
 public class AdminController {
     private final CompilationService compilationService;
     private final UserService userService;
+    private final CategoryService categoryService;
 
     @PostMapping(value = "/compilations")
     public CompilationDto createCompilation(@Valid @RequestBody NewCompilationDto newCompilationDto, HttpServletRequest request) {
@@ -81,5 +80,21 @@ public class AdminController {
         );
 
         userService.deleteUser(userId);
+    }
+
+    @PostMapping(value = "/categories")
+    public CategoryDto createCategory(@Valid @RequestBody NewCategoryDto newCategoryDto, HttpServletRequest request) {
+        LogHelper.dump(
+                Map.of("newCategoryDto", newCategoryDto),
+                request
+        );
+
+        return categoryService.create(categoryService.mapHelperToDto(newCategoryDto));
+    }
+
+    @PatchMapping(value = "/categories")
+    public CategoryDto updateCategory(@Valid @RequestBody CategoryDto categoryDto, HttpServletRequest request) {
+        LogHelper.dump(Map.of("categoryDto", categoryDto), request);
+        return categoryService.update(categoryDto);
     }
 }

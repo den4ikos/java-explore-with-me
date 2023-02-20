@@ -1,14 +1,12 @@
 package ru.practicum.explorewithmemain.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Data
 @Setter
 @Getter
 @AllArgsConstructor
+@Builder
 public class CategoryDto {
     private Long id;
     private String name;

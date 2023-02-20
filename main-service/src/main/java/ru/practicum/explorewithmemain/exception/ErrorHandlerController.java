@@ -57,6 +57,6 @@ public class ErrorHandlerController {
     @ExceptionHandler
     @ResponseStatus(BAD_REQUEST)
     public Map<String, String> handleAlreadyExistsException(final AlreadyExistsException e) {
-        return Map.of("error", e.getMessage());
+        return Map.of("error", e.getMessage(), "status", "error");
     }
 }
