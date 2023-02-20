@@ -2,18 +2,22 @@ package ru.practicum.explorewithmemain.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithmemain.Constants;
 import ru.practicum.explorewithmemain.dto.ParticipationRequestDto;
+import ru.practicum.explorewithmemain.dto.UserDto;
 import ru.practicum.explorewithmemain.entity.Event;
 import ru.practicum.explorewithmemain.entity.Request;
 import ru.practicum.explorewithmemain.entity.User;
+import ru.practicum.explorewithmemain.exception.AlreadyExistsException;
 import ru.practicum.explorewithmemain.exception.ConflictException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
 import ru.practicum.explorewithmemain.helper.State;
 import ru.practicum.explorewithmemain.helper.Status;
 import ru.practicum.explorewithmemain.mapper.RequestMapper;
+import ru.practicum.explorewithmemain.mapper.UserMapper;
 import ru.practicum.explorewithmemain.repository.EventRepository;
 import ru.practicum.explorewithmemain.repository.RequestRepository;
 import ru.practicum.explorewithmemain.repository.UserRepository;
@@ -64,5 +68,17 @@ public class UserServiceImpl implements UserService {
         Request request = requestRepository.save(RequestMapper.toParticipationRequest(user, event, Status.PENDING));
 
         return RequestMapper.toParticipationRequestDto(request);
+    }
+
+    @Override
+    @Transactional
+    public UserDto createUser(UserDto userDto) {
+        try {
+            User u = userRepository.save(UserMapper.toUser(userDto));
+            return UserMapper.toUserDto(u);
+        } catch (DataIntegrityViolationException e) {
+            log.error(String.format(Constants.emailAlreadyExists, userDto.getEmail()));
+            throw new AlreadyExistsException(String.format(Constants.emailAlreadyExists, userDto.getEmail()));
+        }
     }
 }
