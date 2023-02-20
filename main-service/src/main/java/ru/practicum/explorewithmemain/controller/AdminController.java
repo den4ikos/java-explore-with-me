@@ -14,6 +14,9 @@ import ru.practicum.explorewithmemain.service.interfaces.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -43,6 +46,21 @@ public class AdminController {
         compilationService.delete(compId);
     }
 
+    @GetMapping(value = "/users")
+    public List<UserDto> getUsersByParams(
+            @RequestParam(value = "ids", required = false) Long[] ids,
+            @Valid @PositiveOrZero @RequestParam(defaultValue = "0", required = false) int from,
+            @Valid @Positive @RequestParam(defaultValue = "10", required = false) int size,
+            HttpServletRequest request
+    ) {
+        LogHelper.dump(
+                Map.of("ids", ids, "from", from, "size", size),
+                request
+        );
+
+        return userService.getUsers(Map.of("ids", ids, "from", from, "size", size));
+    }
+
     @PostMapping(value = "/users")
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto createUser(@Valid @RequestBody NewUserRequestDto newUserRequestDto, HttpServletRequest request) {
@@ -52,5 +70,16 @@ public class AdminController {
         );
 
         return userService.createUser(UserMapper.fromNewUserRequestToUserDto(newUserRequestDto));
+    }
+
+    @DeleteMapping(value = "/users/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable Long userId, HttpServletRequest request) {
+        LogHelper.dump(
+                Map.of("userId", userId),
+                request
+        );
+
+        userService.deleteUser(userId);
     }
 }

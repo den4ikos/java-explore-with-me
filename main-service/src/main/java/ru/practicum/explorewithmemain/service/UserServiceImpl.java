@@ -3,6 +3,9 @@ package ru.practicum.explorewithmemain.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithmemain.Constants;
@@ -23,7 +26,9 @@ import ru.practicum.explorewithmemain.repository.RequestRepository;
 import ru.practicum.explorewithmemain.repository.UserRepository;
 import ru.practicum.explorewithmemain.service.interfaces.UserService;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -80,5 +85,35 @@ public class UserServiceImpl implements UserService {
             log.error(String.format(Constants.emailAlreadyExists, userDto.getEmail()));
             throw new AlreadyExistsException(String.format(Constants.emailAlreadyExists, userDto.getEmail()));
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long userId) {
+        try {
+            userRepository.deleteById(userId);
+        } catch (EmptyResultDataAccessException e) {
+            log.error(String.format(Constants.notFoundError, "User"));
+            throw new NotFoundException(String.format(Constants.notFoundError, "User"));
+        }
+    }
+
+    @Override
+    public List<UserDto> getUsers(Map<String, Object> params) {
+        Long[] ids = (Long[]) params.get("ids");
+        int from = (int) params.get("from");
+        int size = (int) params.get("size");
+        Pageable page = PageRequest.of( (from/size), size );
+        List<User> users;
+        if (null == ids) {
+            users = userRepository.findAll(page).stream().collect(Collectors.toList());
+        } else {
+            users = userRepository.findByIdIsIn(Arrays.asList(ids), page);
+        }
+
+        return users
+                .stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 }

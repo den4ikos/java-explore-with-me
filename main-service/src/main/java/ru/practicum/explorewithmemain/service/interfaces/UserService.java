@@ -4,6 +4,7 @@ import ru.practicum.explorewithmemain.dto.ParticipationRequestDto;
 import ru.practicum.explorewithmemain.dto.UserDto;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
 
@@ -12,4 +13,8 @@ public interface UserService {
     ParticipationRequestDto createUserRequest(Long userId, Long eventId);
 
     UserDto createUser(UserDto userDto);
+
+    void deleteUser(Long userId);
+
+    List<UserDto> getUsers(Map<String, Object> params);
 }
