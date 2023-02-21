@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithmemain.Constants;
 import ru.practicum.explorewithmemain.dto.EventFullDto;
+import ru.practicum.explorewithmemain.dto.EventShortDto;
 import ru.practicum.explorewithmemain.entity.Event;
 import ru.practicum.explorewithmemain.exception.BadRequestException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
@@ -27,12 +28,36 @@ public class EventServiceImpl implements EventService {
     private final EventMapper eventMapper;
 
     @Override
+    public List<EventShortDto> getShort(Map<String, Object> params) {
+        LocalDateTime rangeStart = (LocalDateTime) params.get("start");
+        LocalDateTime rangeEnd = (LocalDateTime) params.get("end");
+
+        if (rangeStart.isAfter(rangeEnd)) {
+            throw new BadRequestException(Constants.eventDateError);
+        }
+
+        List<Event> events;
+
+        if (params.containsKey("categories") && null != params.get("categories")) {
+            Set<Long> categories = (Set<Long>) params.get("categories");
+            events = eventRepository.findEventsForPublicWithCategoriesAndText(categories, (String) params.get("text"));
+        } else {
+            events = eventRepository.findEventsForPublicByText((String) params.get("text"));
+        }
+
+        return events
+                .stream()
+                .map(eventMapper::toShortDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<EventFullDto> get(Map<String, Object> params) {
         LocalDateTime rangeStart = (LocalDateTime) params.get("start");
         LocalDateTime rangeEnd = (LocalDateTime) params.get("end");
 
         if (rangeStart.isAfter(rangeEnd)) {
-            throw new BadRequestException("The end date of the event can't be earlier than the event's start date.");
+            throw new BadRequestException(Constants.eventDateError);
         }
 
         Set<State> states;

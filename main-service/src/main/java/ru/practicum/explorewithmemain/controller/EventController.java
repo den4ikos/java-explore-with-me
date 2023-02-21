@@ -83,7 +83,6 @@ public class EventController {
                 "uri", request.getRequestURI()
         ));
 
-//        return eventService.get(data);
-        return null;
+        return eventService.getShort(data);
     }
 }

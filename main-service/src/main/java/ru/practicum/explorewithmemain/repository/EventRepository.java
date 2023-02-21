@@ -28,4 +28,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query(value = "select e from Event e where e.state in :states and e.initiator in :users")
     List<Event> findEventsByEventsAndStates(@Param("users") Set<Long> users, @Param("states") Set<State> states, Pageable page);
+
+    @Query(value = "select e from Event e where e.category.id in :categories and (lower(e.annotation) like concat('%',lower(:text),'%') or lower(e.description) like concat('%',lower(:text),'%'))")
+    List<Event> findEventsForPublicWithCategoriesAndText(@Param("categories") Set<Long> categories, @Param("text") String text);
+
+    @Query(value = "select e from Event e where lower(e.annotation) like concat('%',lower(:text),'%') or lower(e.description) like concat('%',lower(:text),'%')")
+    List<Event> findEventsForPublicByText(@Param("text") String text);
 }
