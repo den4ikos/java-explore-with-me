@@ -2,18 +2,17 @@ package ru.practicum.explorewithmemain.mapper;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.explorewithmemain.dto.CategoryDto;
-import ru.practicum.explorewithmemain.dto.EventFullDto;
-import ru.practicum.explorewithmemain.dto.EventShortDto;
-import ru.practicum.explorewithmemain.dto.UserShortDto;
+import ru.practicum.explorewithmemain.dto.*;
 import ru.practicum.explorewithmemain.entity.Category;
 import ru.practicum.explorewithmemain.entity.Event;
 import ru.practicum.explorewithmemain.entity.Request;
 import ru.practicum.explorewithmemain.entity.User;
+import ru.practicum.explorewithmemain.helper.State;
 import ru.practicum.explorewithmemain.helper.Status;
 import ru.practicum.explorewithmemain.service.interfaces.RequestService;
 import ru.practicum.explorewithmemain.service.interfaces.StatisticService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -75,5 +74,47 @@ public class EventMapper {
     private Long getConfirmedRequest(Event event) {
         List<Request> r = requestService.findRequestByEventIdAndStatus(event.getId(), Status.CONFIRMED);
         return (long) r.size();
+    }
+
+    public EventCreateDto toCreateDto(NewEventDto newEventDto, UserDto initiator, CategoryDto categoryDto) {
+        if (null == newEventDto) return null;
+
+        return EventCreateDto
+                .builder()
+                .annotation(newEventDto.getAnnotation())
+                .categoryDto(categoryDto)
+                .description(newEventDto.getDescription())
+                .eventDate(newEventDto.getEventDate())
+                .initiator(initiator)
+                .paid(newEventDto.getPaid())
+                .location(newEventDto.getLocation())
+                .participantLimit(newEventDto.getParticipantLimit())
+                .requestModeration(newEventDto.getRequestModeration())
+                .title(newEventDto.getTitle())
+                .createdOn(LocalDateTime.now())
+                .build();
+    }
+
+    public Event eventCreateDtoToEvent(EventCreateDto eventCreateDto) {
+        if (null == eventCreateDto) return null;
+
+        CategoryDto categoryDto = eventCreateDto.getCategoryDto();
+        UserDto initiator = eventCreateDto.getInitiator();
+
+        return Event
+                .builder()
+                .id(null)
+                .title(eventCreateDto.getTitle())
+                .annotation(eventCreateDto.getAnnotation())
+                .description(eventCreateDto.getDescription())
+                .category(new Category(categoryDto.getId(), categoryDto.getName()))
+                .eventDate(eventCreateDto.getEventDate())
+                .initiator(new User(initiator.getId(), initiator.getEmail(), initiator.getName()))
+                .location(eventCreateDto.getLocation())
+                .paid(eventCreateDto.getPaid())
+                .participantLimit(eventCreateDto.getParticipantLimit())
+                .requestModeration(eventCreateDto.getRequestModeration())
+                .state(State.PENDING)
+                .build();
     }
 }

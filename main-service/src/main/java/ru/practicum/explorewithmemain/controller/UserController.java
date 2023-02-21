@@ -2,7 +2,9 @@ package ru.practicum.explorewithmemain.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explorewithmemain.dto.EventFullDto;
 import ru.practicum.explorewithmemain.dto.EventShortDto;
+import ru.practicum.explorewithmemain.dto.NewEventDto;
 import ru.practicum.explorewithmemain.dto.ParticipationRequestDto;
 import ru.practicum.explorewithmemain.helper.LogHelper;
 import ru.practicum.explorewithmemain.service.interfaces.UserService;
@@ -53,6 +55,12 @@ public class UserController {
         );
 
         return userService.getUserEvents(Map.of("userId", userId, "from", from, "size", size));
+    }
+
+    @PostMapping(value = "/{userId}/events")
+    public EventFullDto createUserEvent(@Valid @RequestBody NewEventDto newEventDto, @PathVariable Long userId, HttpServletRequest request) {
+        LogHelper.dump(Map.of("userId", userId, "newEventDto", newEventDto), request);
+        return userService.createUserEvent(newEventDto, userId);
     }
 
 }

@@ -9,9 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithmemain.Constants;
-import ru.practicum.explorewithmemain.dto.EventShortDto;
-import ru.practicum.explorewithmemain.dto.ParticipationRequestDto;
-import ru.practicum.explorewithmemain.dto.UserDto;
+import ru.practicum.explorewithmemain.dto.*;
+import ru.practicum.explorewithmemain.entity.Category;
 import ru.practicum.explorewithmemain.entity.Event;
 import ru.practicum.explorewithmemain.entity.Request;
 import ru.practicum.explorewithmemain.entity.User;
@@ -21,14 +20,17 @@ import ru.practicum.explorewithmemain.exception.ConflictException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
 import ru.practicum.explorewithmemain.helper.State;
 import ru.practicum.explorewithmemain.helper.Status;
+import ru.practicum.explorewithmemain.mapper.CategoryMapper;
 import ru.practicum.explorewithmemain.mapper.EventMapper;
 import ru.practicum.explorewithmemain.mapper.RequestMapper;
 import ru.practicum.explorewithmemain.mapper.UserMapper;
+import ru.practicum.explorewithmemain.repository.CategoryRepository;
 import ru.practicum.explorewithmemain.repository.EventRepository;
 import ru.practicum.explorewithmemain.repository.RequestRepository;
 import ru.practicum.explorewithmemain.repository.UserRepository;
 import ru.practicum.explorewithmemain.service.interfaces.UserService;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
+    private final CategoryMapper categoryMapper;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
@@ -122,6 +126,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public List<EventShortDto> getUserEvents(Map<String, Object> params) {
         if (!params.containsKey("userId")) throw new BadRequestException(Constants.badRequest);
 
@@ -140,5 +145,31 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .map(eventMapper::toShortDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public EventFullDto createUserEvent(NewEventDto newEventDto, Long userId) {
+        User u = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.userNotFound, userId)));
+
+        UserDto initiator = UserMapper.toUserDto(u);
+
+        Category c = categoryRepository
+                .findById(newEventDto.getCategoryId())
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Category")));
+
+        CategoryDto categoryDto = categoryMapper.toDto(c);
+
+        EventCreateDto ecd = eventMapper.toCreateDto(newEventDto, initiator, categoryDto);
+
+        if (ecd.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new BadRequestException(Constants.eventDateError);
+        }
+
+        Event event = eventRepository.save(eventMapper.eventCreateDtoToEvent(ecd));
+
+        return eventMapper.toFullDto(event);
     }
 }

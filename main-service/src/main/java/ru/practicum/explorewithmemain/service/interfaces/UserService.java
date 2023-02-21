@@ -1,8 +1,6 @@
 package ru.practicum.explorewithmemain.service.interfaces;
 
-import ru.practicum.explorewithmemain.dto.EventShortDto;
-import ru.practicum.explorewithmemain.dto.ParticipationRequestDto;
-import ru.practicum.explorewithmemain.dto.UserDto;
+import ru.practicum.explorewithmemain.dto.*;
 
 import java.util.List;
 import java.util.Map;
@@ -20,4 +18,6 @@ public interface UserService {
     List<UserDto> getUsers(Map<String, Object> params);
 
     List<EventShortDto> getUserEvents(Map<String, Object> params);
+
+    EventFullDto createUserEvent(NewEventDto newEventDto, Long userId);
 }
