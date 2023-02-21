@@ -4,18 +4,21 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithmemain.dto.*;
+import ru.practicum.explorewithmemain.helper.DateWorkHelper;
 import ru.practicum.explorewithmemain.helper.LogHelper;
+import ru.practicum.explorewithmemain.helper.State;
 import ru.practicum.explorewithmemain.mapper.UserMapper;
-import ru.practicum.explorewithmemain.service.interfaces.CategoryService;
-import ru.practicum.explorewithmemain.service.interfaces.CompilationService;
-import ru.practicum.explorewithmemain.service.interfaces.UserService;
+import ru.practicum.explorewithmemain.service.interfaces.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -24,6 +27,8 @@ public class AdminController {
     private final CompilationService compilationService;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final EventService eventService;
+    private final StatisticService statisticService;
 
     @PostMapping(value = "/compilations")
     public CompilationDto createCompilation(@Valid @RequestBody NewCompilationDto newCompilationDto, HttpServletRequest request) {
@@ -96,5 +101,42 @@ public class AdminController {
     public CategoryDto updateCategory(@Valid @RequestBody CategoryDto categoryDto, HttpServletRequest request) {
         LogHelper.dump(Map.of("categoryDto", categoryDto), request);
         return categoryService.update(categoryDto);
+    }
+
+    @GetMapping(value = "/events")
+    public List<EventFullDto> get(
+            @RequestParam(required = false) Set<Long> users,
+            @RequestParam(required = false) Set<State> states,
+            @RequestParam(required = false) Set<Long> categories,
+            @RequestParam(required = false) String rangeStart,
+            @RequestParam(required = false) String rangeEnd,
+            @Valid @PositiveOrZero @RequestParam(defaultValue = "0") int from,
+            @Valid @Positive @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request
+    ) {
+
+        LocalDateTime start = DateWorkHelper.makeDateFromRequest("start", rangeStart);
+        LocalDateTime end = DateWorkHelper.makeDateFromRequest("end", rangeEnd);
+        Map<String, Object> data = new HashMap<>();
+        if (null != users) {
+            data.put("users", users);
+        }
+
+        if (null != states) {
+            data.put("states", states);
+        }
+
+        if (null != categories) {
+            data.put("categories", categories);
+        }
+
+        data.put("start", start);
+        data.put("end", end);
+        data.put("from", from);
+        data.put("size", size);
+
+        LogHelper.dump(data, request);
+
+        return eventService.get(data);
     }
 }

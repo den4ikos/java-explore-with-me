@@ -5,8 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.practicum.explorewithmemain.entity.Event;
+import ru.practicum.explorewithmemain.helper.State;
 
 import java.util.List;
+import java.util.Set;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
 
@@ -14,4 +16,16 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Boolean isEventExists(@Param("id") Long eventId);
 
     List<Event> findByInitiatorId(Long userId, Pageable page);
+
+    @Query(value = "select e from Event e where e.state in :states")
+    List<Event> findEventsByStates(@Param("states") Set<State> states, Pageable page);
+
+    @Query(value = "select e from Event e where e.state in :states and e.category.id in :categories and e.initiator in :users")
+    List<Event> findEventsByCategoriesAndUsersAndStates(@Param("categories") Set<Long> categories, @Param("users") Set<Long> users, @Param("states") Set<State> states, Pageable page);
+
+    @Query(value = "select e from Event e where e.state in :states and e.category.id in :categories")
+    List<Event> findEventsByCategoriesAndStates(@Param("categories") Set<Long> categories, @Param("states") Set<State> states, Pageable page);
+
+    @Query(value = "select e from Event e where e.state in :states and e.initiator in :users")
+    List<Event> findEventsByEventsAndStates(@Param("users") Set<Long> users, @Param("states") Set<State> states, Pageable page);
 }

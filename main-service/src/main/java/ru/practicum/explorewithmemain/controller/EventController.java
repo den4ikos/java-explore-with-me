@@ -1,6 +1,7 @@
 package ru.practicum.explorewithmemain.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,11 +24,16 @@ import java.util.Map;
 import java.util.Set;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping(value = "/events")
 public class EventController {
     private final EventService eventService;
     private final StatisticService statisticService;
+
+    @Autowired
+    public EventController(EventService eventService, StatisticService statisticService) {
+        this.eventService = eventService;
+        this.statisticService = statisticService;
+    }
 
     @GetMapping
     public List<EventShortDto> get(
@@ -77,6 +83,7 @@ public class EventController {
                 "uri", request.getRequestURI()
         ));
 
-        return eventService.get(data);
+//        return eventService.get(data);
+        return null;
     }
 }

@@ -44,4 +44,5 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private State state;
     private Long views;
+    private LocalDateTime createdAt;
 }

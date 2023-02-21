@@ -1,7 +1,6 @@
 package ru.practicum.explorewithmemain.service;
 
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.explorewithmemain.Constants;
 import ru.practicum.explorewithmemain.client.StatisticClient;
@@ -18,10 +17,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
-@RequiredArgsConstructor
 public class StatisticServiceImpl implements StatisticService {
-    private StatisticClient statisticClient;
+    private final StatisticClient statisticClient;
+
+    @Autowired
+    public StatisticServiceImpl(StatisticClient statisticClient) {
+        this.statisticClient = statisticClient;
+    }
 
     @Override
     public Long countViews(String uri) {
@@ -69,6 +71,6 @@ public class StatisticServiceImpl implements StatisticService {
                 .timestamp(LocalDateTime.now())
                 .build();
 
-//        statisticClient.setEventHit(hitDto);
+        statisticClient.setEventHit(hitDto);
     }
 }
