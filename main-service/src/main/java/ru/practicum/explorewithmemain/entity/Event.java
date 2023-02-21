@@ -47,4 +47,10 @@ public class Event {
     private State state;
     private Long views;
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
+
 }

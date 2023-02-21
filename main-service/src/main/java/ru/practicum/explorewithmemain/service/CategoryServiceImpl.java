@@ -3,6 +3,7 @@ package ru.practicum.explorewithmemain.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,5 +75,15 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category savedCat = categoryRepository.save(c);
         return categoryMapper.toDto(savedCat);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCategory(Long catId) {
+        try {
+            categoryRepository.deleteById(catId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException(String.format(Constants.notFoundError, "Category"));
+        }
     }
 }

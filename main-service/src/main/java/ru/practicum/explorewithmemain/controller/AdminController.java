@@ -3,7 +3,9 @@ package ru.practicum.explorewithmemain.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explorewithmemain.Constants;
 import ru.practicum.explorewithmemain.dto.*;
+import ru.practicum.explorewithmemain.exception.AlreadyExistsException;
 import ru.practicum.explorewithmemain.helper.DateWorkHelper;
 import ru.practicum.explorewithmemain.helper.LogHelper;
 import ru.practicum.explorewithmemain.helper.State;
@@ -88,6 +90,7 @@ public class AdminController {
     }
 
     @PostMapping(value = "/categories")
+    @ResponseStatus(HttpStatus.CREATED)
     public CategoryDto createCategory(@Valid @RequestBody NewCategoryDto newCategoryDto, HttpServletRequest request) {
         LogHelper.dump(
                 Map.of("newCategoryDto", newCategoryDto),
@@ -95,6 +98,18 @@ public class AdminController {
         );
 
         return categoryService.create(categoryService.mapHelperToDto(newCategoryDto));
+    }
+
+    @PatchMapping(value = "/categories/{catId}")
+    public void patchCategory(@PathVariable Long catId) {
+        throw new AlreadyExistsException(String.format(Constants.notFoundError, "Category"));
+    }
+
+    @DeleteMapping(value = "/categories/{catId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCategory(@PathVariable Long catId, HttpServletRequest request) {
+        LogHelper.dump(Map.of("catId", catId), request);
+        categoryService.deleteCategory(catId);
     }
 
     @PatchMapping(value = "/categories")

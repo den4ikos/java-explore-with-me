@@ -15,4 +15,6 @@ public interface CategoryService {
     CategoryDto mapHelperToDto(NewCategoryDto categoryDto);
 
     CategoryDto update(CategoryDto categoryDto);
+
+    void deleteCategory(Long catId);
 }
