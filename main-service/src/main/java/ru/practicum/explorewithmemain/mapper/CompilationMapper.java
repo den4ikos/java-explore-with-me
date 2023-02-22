@@ -3,6 +3,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.practicum.explorewithmemain.dto.CompilationDto;
 import ru.practicum.explorewithmemain.dto.NewCompilationDto;
+import ru.practicum.explorewithmemain.dto.UpdateCompilationDto;
 import ru.practicum.explorewithmemain.entity.Compilation;
 import ru.practicum.explorewithmemain.service.interfaces.EventService;
 
@@ -33,7 +34,19 @@ public class CompilationMapper {
     }
 
     public Compilation toCompilation(CompilationDto compilationDto) {
-        return null;
+        return Compilation
+                .builder()
+                .id(compilationDto.getId())
+                .title(compilationDto.getTitle())
+                .pinned(compilationDto.getPinned())
+                .events(
+                        compilationDto.getEvents()
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .map(e -> eventService.getEventById(e.getId()))
+                        .collect(Collectors.toSet())
+                )
+                .build();
     }
 
     public Compilation newCompilationDtoToCompilation(NewCompilationDto newCompilationDto) {

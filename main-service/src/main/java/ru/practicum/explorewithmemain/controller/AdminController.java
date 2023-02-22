@@ -34,6 +34,7 @@ public class AdminController {
     private final StatisticService statisticService;
 
     @PostMapping(value = "/compilations")
+    @ResponseStatus(HttpStatus.CREATED)
     public CompilationDto createCompilation(@Valid @RequestBody NewCompilationDto newCompilationDto, HttpServletRequest request) {
         LogHelper.dump(
                 Map.of("newCompilationDto", newCompilationDto),
@@ -43,7 +44,22 @@ public class AdminController {
         return compilationService.create(newCompilationDto);
     }
 
+    @PatchMapping(value = "/compilations/{compId}")
+    public CompilationDto updateCompilation(
+            @Valid @RequestBody CompilationDto compilationDto,
+            @PathVariable Long compId,
+            HttpServletRequest request) {
+        System.out.println("SJDBHSDHSHGSD");
+        LogHelper.dump(
+                Map.of("newCompilationDto", compilationDto, "compId", compId),
+                request
+        );
+
+        return compilationService.update(compilationDto, compId);
+    }
+
     @DeleteMapping(value = "/compilations/{compId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompilationByCompId(@PathVariable Long compId, HttpServletRequest request) {
         LogHelper.dump(
                 Map.of("compId", compId),
