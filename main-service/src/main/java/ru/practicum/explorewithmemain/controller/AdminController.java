@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithmemain.Constants;
 import ru.practicum.explorewithmemain.dto.*;
 import ru.practicum.explorewithmemain.exception.AlreadyExistsException;
+import ru.practicum.explorewithmemain.exception.ConflictException;
 import ru.practicum.explorewithmemain.helper.DateWorkHelper;
 import ru.practicum.explorewithmemain.helper.LogHelper;
 import ru.practicum.explorewithmemain.helper.State;
@@ -92,7 +93,6 @@ public class AdminController {
     @PostMapping(value = "/categories")
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryDto createCategory(@RequestBody @Valid NewCategoryDto newCategoryDto, HttpServletRequest request) {
-        System.out.println("CREATE CATEGORY");
         LogHelper.dump(
                 Map.of("newCategoryDto", newCategoryDto),
                 request
@@ -102,8 +102,9 @@ public class AdminController {
     }
 
     @PatchMapping(value = "/categories/{catId}")
-    public void patchCategory(@PathVariable Long catId) {
-        throw new AlreadyExistsException(String.format(Constants.notFoundError, "Category"));
+    public CategoryDto patchCategory(@PathVariable Long catId, @Valid @RequestBody NewCategoryDto newCategoryDto, HttpServletRequest request) {
+        LogHelper.dump(Map.of("catId", catId, "newCatDto", newCategoryDto), request);
+        return categoryService.updateCategory(catId, newCategoryDto);
     }
 
     @DeleteMapping(value = "/categories/{catId}")

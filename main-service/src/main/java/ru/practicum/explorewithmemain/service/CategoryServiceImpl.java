@@ -12,6 +12,7 @@ import ru.practicum.explorewithmemain.dto.CategoryDto;
 import ru.practicum.explorewithmemain.dto.NewCategoryDto;
 import ru.practicum.explorewithmemain.entity.Category;
 import ru.practicum.explorewithmemain.exception.AlreadyExistsException;
+import ru.practicum.explorewithmemain.exception.ConflictException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
 import ru.practicum.explorewithmemain.mapper.CategoryMapper;
 import ru.practicum.explorewithmemain.repository.CategoryRepository;
@@ -53,7 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
             return categoryMapper.toDto(category);
         } catch (DataIntegrityViolationException e) {
             log.error("ERROR from category create " + e.getMessage());
-            throw new AlreadyExistsException(String.format(Constants.alreadyExists, "Category", categoryDto.getName()));
+            throw new ConflictException(String.format(Constants.alreadyExists, "Category", categoryDto.getName()));
         }
     }
 
@@ -80,10 +81,25 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void deleteCategory(Long catId) {
+        Long eventsCategory = categoryRepository.countAllRelatedEvents(catId);
+
+        if (eventsCategory > 0) {
+            throw new ConflictException(Constants.categoryEventsCount);
+        }
         try {
             categoryRepository.deleteById(catId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(String.format(Constants.notFoundError, "Category"));
         }
+    }
+
+    @Override
+    @Transactional
+    public CategoryDto updateCategory(Long catId, NewCategoryDto categoryDto) {
+        Category c = categoryRepository
+                .findById(catId)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Category")));
+
+        throw new ConflictException("CONFLICT");
     }
 }

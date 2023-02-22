@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
             return UserMapper.toUserDto(u);
         } catch (DataIntegrityViolationException e) {
             log.error(String.format(Constants.emailAlreadyExists, userDto.getEmail()));
-            throw new AlreadyExistsException(String.format(Constants.emailAlreadyExists, userDto.getEmail()));
+            throw new ConflictException(String.format(Constants.emailAlreadyExists, userDto.getEmail()));
         }
     }
 

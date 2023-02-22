@@ -2,10 +2,7 @@ package ru.practicum.explorewithmemain.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explorewithmemain.dto.EventFullDto;
-import ru.practicum.explorewithmemain.dto.EventShortDto;
-import ru.practicum.explorewithmemain.dto.NewEventDto;
-import ru.practicum.explorewithmemain.dto.ParticipationRequestDto;
+import ru.practicum.explorewithmemain.dto.*;
 import ru.practicum.explorewithmemain.helper.LogHelper;
 import ru.practicum.explorewithmemain.service.interfaces.UserService;
 
@@ -69,5 +66,19 @@ public class UserController {
         LogHelper.dump(Map.of("userId", userId, "eventId", eventId), request);
         return userService.cancelEvent(userId, eventId);
     }
+
+    @PatchMapping(value = "/{userId}/events/{eventId}/requests")
+    public List<ParticipationRequestDto> resetEventAction(
+            @RequestBody EventRequestStatusUpdateRequest er,
+            @PathVariable Long userId,
+            @PathVariable Long eventId,
+            HttpServletRequest request) {
+        LogHelper.dump(
+                Map.of("EventRequestStatusUpdateRequest", er, "userId", userId, "eventId", eventId),
+                request
+        );
+        return null;
+    }
+
 
 }

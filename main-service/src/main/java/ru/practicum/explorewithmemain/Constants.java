@@ -14,4 +14,5 @@ public class Constants {
     public static final String eventDateError = "The end date of the event can't be earlier than the event's start date.";
     public static final String initiatorCanceled = "Only the event's initiator can cancel it";
     public static final String eventCanceledConflict = "Only events with pending status can be canceled";
+    public static final String categoryEventsCount = "You can not remove this category";
 }
