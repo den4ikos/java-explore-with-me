@@ -91,7 +91,7 @@ public class AdminController {
 
     @PostMapping(value = "/categories")
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto createCategory(@Valid @RequestBody NewCategoryDto newCategoryDto, HttpServletRequest request) {
+    public CategoryDto createCategory(@RequestBody @Valid NewCategoryDto newCategoryDto, HttpServletRequest request) {
         LogHelper.dump(
                 Map.of("newCategoryDto", newCategoryDto),
                 request
