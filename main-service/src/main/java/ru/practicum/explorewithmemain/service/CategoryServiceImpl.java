@@ -52,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
             Category category = categoryRepository.save(categoryMapper.toCategory(categoryDto));
             return categoryMapper.toDto(category);
         } catch (DataIntegrityViolationException e) {
-            log.error(e.getMessage());
+            log.error("ERROR from category create " + e.getMessage());
             throw new AlreadyExistsException(String.format(Constants.alreadyExists, "Category", categoryDto.getName()));
         }
     }

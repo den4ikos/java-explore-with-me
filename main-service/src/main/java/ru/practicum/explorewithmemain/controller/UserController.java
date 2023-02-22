@@ -59,8 +59,15 @@ public class UserController {
 
     @PostMapping(value = "/{userId}/events")
     public EventFullDto createUserEvent(@Valid @RequestBody NewEventDto newEventDto, @PathVariable Long userId, HttpServletRequest request) {
+        System.out.println("CREATE EVENT");
         LogHelper.dump(Map.of("userId", userId, "newEventDto", newEventDto), request);
         return userService.createUserEvent(newEventDto, userId);
+    }
+
+    @PatchMapping("/{userId}/events/{eventId}")
+    public EventFullDto cancelEvent(@PathVariable Long userId, @PathVariable Long eventId, HttpServletRequest request) {
+        LogHelper.dump(Map.of("userId", userId, "eventId", eventId), request);
+        return userService.cancelEvent(userId, eventId);
     }
 
 }

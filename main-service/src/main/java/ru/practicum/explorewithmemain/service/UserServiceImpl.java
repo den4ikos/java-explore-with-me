@@ -172,4 +172,28 @@ public class UserServiceImpl implements UserService {
 
         return eventMapper.toFullDto(event);
     }
+
+    @Override
+    @Transactional
+    public EventFullDto cancelEvent(Long userId, Long eventId) {
+        User u = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.userNotFound, userId)));
+
+        Event e = eventRepository
+                    .findById(eventId)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Event with id " + eventId)));
+
+        if (!u.getId().equals(e.getInitiator().getId())) {
+            throw new ConflictException(Constants.initiatorCanceled);
+        }
+
+        if (!State.PENDING.equals(e.getState())) {
+            throw new ConflictException(Constants.eventCanceledConflict);
+        }
+
+        Event savedEvent = eventRepository.save(e);
+
+        return eventMapper.toFullDto(savedEvent);
+    }
 }

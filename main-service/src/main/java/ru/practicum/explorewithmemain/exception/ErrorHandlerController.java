@@ -33,7 +33,7 @@ public class ErrorHandlerController {
             customFieldErrors.add(customFieldError);
         }
 
-        return ResponseEntity.badRequest().body(customFieldErrors);
+        return ResponseEntity.badRequest().body(Map.of("errors", customFieldErrors, "status", false));
     }
 
     @ExceptionHandler

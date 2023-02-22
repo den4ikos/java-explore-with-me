@@ -8,7 +8,7 @@ import java.util.Map;
 @Slf4j
 public class LogHelper {
     public static void dump(Map<String, Object> params, HttpServletRequest request) {
-        StringBuilder message = new StringBuilder("Query from main service to endpoint ");
+        StringBuilder message = new StringBuilder("QUERY FROM MAIN SERVICE to endpoint ");
         message.append(request.getRequestURI()).append(" ");
         message.append("with params: ");
         for (String p: params.keySet()) {

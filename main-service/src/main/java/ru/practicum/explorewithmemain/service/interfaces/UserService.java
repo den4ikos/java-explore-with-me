@@ -20,4 +20,6 @@ public interface UserService {
     List<EventShortDto> getUserEvents(Map<String, Object> params);
 
     EventFullDto createUserEvent(NewEventDto newEventDto, Long userId);
+
+    EventFullDto cancelEvent(Long userId, Long eventId);
 }

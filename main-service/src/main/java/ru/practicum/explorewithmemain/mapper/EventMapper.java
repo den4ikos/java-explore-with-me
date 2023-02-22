@@ -68,6 +68,7 @@ public class EventMapper {
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState())
                 .views(viewsCount)
+                .participantLimit(event.getParticipantLimit())
                 .build();
     }
 
