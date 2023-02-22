@@ -120,6 +120,16 @@ public class AdminController {
         return categoryService.update(categoryDto);
     }
 
+    @PatchMapping(value = "/events/{eventId}")
+    public EventFullDto updateEvent(@Valid @RequestBody UpdateAdminEventDto eventDto, @PathVariable Long eventId, HttpServletRequest request) {
+        LogHelper.dump(
+                Map.of("event for update", eventDto, "eventID", eventId),
+                request
+        );
+
+        return eventService.update(eventId, eventDto);
+    }
+
     @GetMapping(value = "/events")
     public List<EventFullDto> get(
             @RequestParam(required = false) Set<Long> users,

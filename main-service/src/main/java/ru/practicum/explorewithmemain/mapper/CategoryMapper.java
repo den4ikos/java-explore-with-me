@@ -22,4 +22,8 @@ public class CategoryMapper {
     public Category toCategory(CategoryDto categoryDto) {
         return new Category(categoryDto.getId(), categoryDto.getName());
     }
+
+    public Category fromUpdateCategoryDtoToCategory(NewCategoryDto categoryDto, Long catId) {
+        return new Category(catId, categoryDto.getName());
+    }
 }

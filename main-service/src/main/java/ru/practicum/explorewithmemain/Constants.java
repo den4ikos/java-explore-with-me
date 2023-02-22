@@ -15,4 +15,5 @@ public class Constants {
     public static final String initiatorCanceled = "Only the event's initiator can cancel it";
     public static final String eventCanceledConflict = "Only events with pending status can be canceled";
     public static final String categoryEventsCount = "You can not remove this category";
+    public static final String eventConflictStatus = "Cannot publish the event because it's not in the right state: %s";
 }

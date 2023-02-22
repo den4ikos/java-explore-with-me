@@ -96,10 +96,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto updateCategory(Long catId, NewCategoryDto categoryDto) {
-        Category c = categoryRepository
-                .findById(catId)
-                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Category")));
+        if (!categoryRepository.existsById(catId)) {
+            throw new NotFoundException(String.format(Constants.notFoundError, "Category " + catId));
+        }
 
-        throw new ConflictException("CONFLICT");
+        Category category = categoryMapper.fromUpdateCategoryDtoToCategory(categoryDto, catId);
+        return categoryMapper.toDto(category);
     }
 }

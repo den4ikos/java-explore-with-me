@@ -1,6 +1,7 @@
 package ru.practicum.explorewithmemain.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithmemain.dto.*;
 import ru.practicum.explorewithmemain.helper.LogHelper;
@@ -55,8 +56,8 @@ public class UserController {
     }
 
     @PostMapping(value = "/{userId}/events")
+    @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto createUserEvent(@Valid @RequestBody NewEventDto newEventDto, @PathVariable Long userId, HttpServletRequest request) {
-        System.out.println("CREATE EVENT");
         LogHelper.dump(Map.of("userId", userId, "newEventDto", newEventDto), request);
         return userService.createUserEvent(newEventDto, userId);
     }

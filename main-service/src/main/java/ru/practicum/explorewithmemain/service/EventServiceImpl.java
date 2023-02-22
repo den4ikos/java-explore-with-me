@@ -8,8 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithmemain.Constants;
 import ru.practicum.explorewithmemain.dto.EventFullDto;
 import ru.practicum.explorewithmemain.dto.EventShortDto;
+import ru.practicum.explorewithmemain.dto.UpdateAdminEventDto;
 import ru.practicum.explorewithmemain.entity.Event;
 import ru.practicum.explorewithmemain.exception.BadRequestException;
+import ru.practicum.explorewithmemain.exception.ConflictException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
 import ru.practicum.explorewithmemain.helper.State;
 import ru.practicum.explorewithmemain.mapper.EventMapper;
@@ -119,5 +121,18 @@ public class EventServiceImpl implements EventService {
         return eventRepository
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Event")));
+    }
+
+    @Override
+    public EventFullDto update(Long eventId, UpdateAdminEventDto eventDto) {
+        Event currentEvent = eventRepository
+                .findById(eventId)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Event " + eventId)));
+
+        if (currentEvent.getState().equals(State.PUBLISHED)) {
+            throw new ConflictException(String.format(Constants.eventConflictStatus, currentEvent.getState()));
+        }
+
+        return null;
     }
 }
