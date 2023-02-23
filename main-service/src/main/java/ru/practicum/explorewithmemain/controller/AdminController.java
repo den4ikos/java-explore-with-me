@@ -1,8 +1,10 @@
 package ru.practicum.explorewithmemain.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explorewithmemain.Constants;
 import ru.practicum.explorewithmemain.dto.*;
 import ru.practicum.explorewithmemain.helper.DateWorkHelper;
 import ru.practicum.explorewithmemain.helper.LogHelper;
@@ -12,6 +14,7 @@ import ru.practicum.explorewithmemain.service.interfaces.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -145,11 +148,11 @@ public class AdminController {
 
     @GetMapping(value = "/events")
     public List<EventFullDto> get(
-            @RequestParam(required = false) Set<Long> users,
-            @RequestParam(required = false) Set<State> states,
-            @RequestParam(required = false) Set<Long> categories,
-            @RequestParam(required = false) String rangeStart,
-            @RequestParam(required = false) String rangeEnd,
+            @RequestParam @NotEmpty Set<Long> users,
+            @RequestParam @NotEmpty Set<State> states,
+            @RequestParam @NotEmpty Set<Long> categories,
+            @RequestParam @DateTimeFormat(pattern = Constants.dateFormat) String rangeStart,
+            @RequestParam @DateTimeFormat(pattern = Constants.dateFormat) String rangeEnd,
             @Valid @PositiveOrZero @RequestParam(defaultValue = "0") int from,
             @Valid @Positive @RequestParam(defaultValue = "10") int size,
             HttpServletRequest request
@@ -177,6 +180,6 @@ public class AdminController {
 
         LogHelper.dump(data, request);
 
-        return eventService.get(data);
+        return eventService.get(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 }

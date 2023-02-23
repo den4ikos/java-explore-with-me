@@ -31,6 +31,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/{userId}/requests")
+    @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto createUserRequest(@PathVariable Long userId, @RequestParam Long eventId, HttpServletRequest request) {
         LogHelper.dump(
                 Map.of("userId", userId, "eventId", eventId),
@@ -68,17 +69,16 @@ public class UserController {
         return userService.cancelEvent(userId, eventId);
     }
 
-    @PatchMapping(value = "/{userId}/events/{eventId}/requests")
-    public List<ParticipationRequestDto> resetEventAction(
-            @RequestBody EventRequestStatusUpdateRequest er,
+    @GetMapping(value = "/{userId}/events/{eventId}/requests")
+    public List<ParticipationRequestDto> getEventAction(
             @PathVariable Long userId,
             @PathVariable Long eventId,
             HttpServletRequest request) {
         LogHelper.dump(
-                Map.of("EventRequestStatusUpdateRequest", er, "userId", userId, "eventId", eventId),
+                Map.of( "userId", userId, "eventId", eventId),
                 request
         );
-        return null;
+        return userService.getEventRequestStatusUpdatedResult(userId, eventId);
     }
 
 

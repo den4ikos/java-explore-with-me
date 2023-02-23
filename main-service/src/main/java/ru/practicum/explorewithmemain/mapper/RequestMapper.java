@@ -7,6 +7,8 @@ import ru.practicum.explorewithmemain.entity.User;
 import ru.practicum.explorewithmemain.helper.Status;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class RequestMapper {
     public static ParticipationRequestDto toParticipationRequestDto(Request request) {
@@ -29,5 +31,23 @@ public class RequestMapper {
                 status,
                 LocalDateTime.now()
         );
+    }
+
+    public static ParticipationRequestDto toDto(Request request) {
+        return ParticipationRequestDto
+                .builder()
+                .id(request.getId())
+                .eventId(request.getEvent().getId())
+                .requesterId(request.getRequestor().getId())
+                .created(request.getCreated())
+                .status(request.getStatus())
+                .build();
+    }
+
+    public static List<ParticipationRequestDto> toListDto(List<Request> requests) {
+        return requests
+                .stream()
+                .map(RequestMapper::toDto)
+                .collect(Collectors.toList());
     }
 }

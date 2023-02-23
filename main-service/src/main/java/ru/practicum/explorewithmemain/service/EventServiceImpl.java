@@ -19,6 +19,7 @@ import ru.practicum.explorewithmemain.repository.EventRepository;
 import ru.practicum.explorewithmemain.service.interfaces.EventService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,44 +55,30 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> get(Map<String, Object> params) {
-        LocalDateTime rangeStart = (LocalDateTime) params.get("start");
-        LocalDateTime rangeEnd = (LocalDateTime) params.get("end");
+    public List<EventFullDto> get(Set<Long> users, Set<State> states, Set<Long> categories, String start, String end, int from, int size) {
+        LocalDateTime rangeStart = LocalDateTime.parse(start, DateTimeFormatter.ofPattern(Constants.dateFormat));
+        LocalDateTime rangeEnd = LocalDateTime.parse(end, DateTimeFormatter.ofPattern(Constants.dateFormat));
 
         if (rangeStart.isAfter(rangeEnd)) {
             throw new BadRequestException(Constants.eventDateError);
         }
 
-        Set<State> states;
-
-        if (!params.containsKey("states")) {
+        if (null != states) {
             states = new HashSet<>();
             states.add(State.PUBLISHED);
             states.add(State.CANCELED);
             states.add(State.PENDING);
-        } else {
-            states = (Set<State>) params.get("states");
         }
 
         List<Event> events = new ArrayList<>();
 
-        int from = params.containsKey("from")
-                ? (int) params.get("from")
-                : 0;
-
-        int size = params.containsKey("size")
-                ? (int) params.get("size")
-                : 0;
-
         Pageable page = PageRequest.of( (from/size), size );
 
-        if ((!params.containsKey("categories") || null == params.get("categories")) && (!params.containsKey("users") || null == params.get("users"))) {
+        if ( null == categories && null == users) {
             events = eventRepository.findEventsByStates(states, page);
         }
 
-        if ( params.containsKey("categories") && null != params.get("categories") && params.containsKey("users") && null != params.get("users") ) {
-            Set<Long> categories = (Set<Long>) params.get("categories");
-            Set<Long> users = (Set<Long>) params.get("users");
+        if ( null != categories &&  null != users ) {
             events = eventRepository.findEventsByCategoriesAndUsersAndStates(
                     categories,
                     users,
@@ -100,13 +87,11 @@ public class EventServiceImpl implements EventService {
             );
         }
 
-        if ( params.containsKey("categories") && null != params.get("categories") && ( !params.containsKey("users") || null == params.get("users") ) ) {
-            Set<Long> categories = (Set<Long>) params.get("categories");
+        if ( null != categories && null == users ) {
             events = eventRepository.findEventsByCategoriesAndStates(categories, states, page);
         }
 
-        if ( (!params.containsKey("categories") || null == params.get("categories")) && params.containsKey("users") && null != params.get("users") ) {
-            Set<Long> users = (Set<Long>) params.get("users");
+        if ( null == categories && null != users ) {
             events = eventRepository.findEventsByEventsAndStates(users, states, page);
         }
 

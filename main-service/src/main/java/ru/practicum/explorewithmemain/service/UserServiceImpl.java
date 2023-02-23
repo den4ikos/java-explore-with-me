@@ -2,6 +2,7 @@ package ru.practicum.explorewithmemain.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
@@ -14,7 +15,6 @@ import ru.practicum.explorewithmemain.entity.Category;
 import ru.practicum.explorewithmemain.entity.Event;
 import ru.practicum.explorewithmemain.entity.Request;
 import ru.practicum.explorewithmemain.entity.User;
-import ru.practicum.explorewithmemain.exception.AlreadyExistsException;
 import ru.practicum.explorewithmemain.exception.BadRequestException;
 import ru.practicum.explorewithmemain.exception.ConflictException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
@@ -195,5 +195,24 @@ public class UserServiceImpl implements UserService {
         Event savedEvent = eventRepository.save(e);
 
         return eventMapper.toFullDto(savedEvent);
+    }
+
+    @Override
+    @Transactional
+    public List<ParticipationRequestDto> getEventRequestStatusUpdatedResult(
+            Long userId,
+            Long eventId) {
+
+        User user = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "User with id " + userId)));
+
+        Event event = eventRepository
+                .findById(eventId)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Event with id " + eventId)));
+
+        List<Request> results = requestRepository.getRequestsByEventAndEventInitiator(event, user);
+
+        return RequestMapper.toListDto(results);
     }
 }
