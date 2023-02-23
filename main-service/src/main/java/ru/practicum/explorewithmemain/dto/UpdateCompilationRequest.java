@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class UpdateCompilationDto {
+public class UpdateCompilationRequest {
     @NotBlank(message = "Title must not be blank")
     private String title;
     private Boolean pinned;

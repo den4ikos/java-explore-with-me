@@ -2,6 +2,7 @@ package ru.practicum.explorewithmemain.service.interfaces;
 
 import ru.practicum.explorewithmemain.dto.CompilationDto;
 import ru.practicum.explorewithmemain.dto.NewCompilationDto;
+import ru.practicum.explorewithmemain.dto.UpdateCompilationRequest;
 
 import java.util.List;
 
@@ -14,5 +15,5 @@ public interface CompilationService {
 
     void delete(Long compId);
 
-    CompilationDto update(CompilationDto compilationDto, Long compId);
+    CompilationDto update(UpdateCompilationRequest compilationDto, Long compId);
 }

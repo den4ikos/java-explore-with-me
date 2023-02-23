@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithmemain.Constants;
 import ru.practicum.explorewithmemain.dto.CompilationDto;
 import ru.practicum.explorewithmemain.dto.NewCompilationDto;
-import ru.practicum.explorewithmemain.dto.UpdateCompilationDto;
+import ru.practicum.explorewithmemain.dto.UpdateCompilationRequest;
 import ru.practicum.explorewithmemain.entity.Compilation;
 import ru.practicum.explorewithmemain.exception.AlreadyExistsException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
@@ -73,12 +73,11 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
-    public CompilationDto update(CompilationDto compilationDto, Long compId) {
+    public CompilationDto update(UpdateCompilationRequest compilationDto, Long compId) {
         if (!compilationRepository.existsById(compId)) {
             throw new NotFoundException(String.format(Constants.notFoundError, "Compilation " + compId));
         }
-        compilationDto.setId(compId);
-        Compilation compilation = compilationMapper.toCompilation(compilationDto);
+        Compilation compilation = compilationMapper.toCompilation(compilationDto, compId);
         return compilationMapper.toDto(compilationRepository.save(compilation));
     }
 }

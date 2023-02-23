@@ -3,10 +3,7 @@ package ru.practicum.explorewithmemain.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explorewithmemain.Constants;
 import ru.practicum.explorewithmemain.dto.*;
-import ru.practicum.explorewithmemain.exception.AlreadyExistsException;
-import ru.practicum.explorewithmemain.exception.ConflictException;
 import ru.practicum.explorewithmemain.helper.DateWorkHelper;
 import ru.practicum.explorewithmemain.helper.LogHelper;
 import ru.practicum.explorewithmemain.helper.State;
@@ -46,16 +43,16 @@ public class AdminController {
 
     @PatchMapping(value = "/compilations/{compId}")
     public CompilationDto updateCompilation(
-            @Valid @RequestBody CompilationDto compilationDto,
             @PathVariable Long compId,
+            @RequestBody UpdateCompilationRequest updateCompilationRequest,
             HttpServletRequest request) {
-        System.out.println("SJDBHSDHSHGSD");
+        System.out.println("SJDBHSDHSHGSD " + updateCompilationRequest);
         LogHelper.dump(
-                Map.of("newCompilationDto", compilationDto, "compId", compId),
+                Map.of("newCompilationDto", updateCompilationRequest, "compId", compId),
                 request
         );
 
-        return compilationService.update(compilationDto, compId);
+        return compilationService.update(updateCompilationRequest, compId);
     }
 
     @DeleteMapping(value = "/compilations/{compId}")
