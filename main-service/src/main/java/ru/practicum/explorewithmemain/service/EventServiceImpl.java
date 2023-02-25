@@ -55,9 +55,21 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> get(Set<Long> users, Set<State> states, Set<Long> categories, String start, String end, int from, int size) {
-        LocalDateTime rangeStart = LocalDateTime.parse(start, DateTimeFormatter.ofPattern(Constants.dateFormat));
-        LocalDateTime rangeEnd = LocalDateTime.parse(end, DateTimeFormatter.ofPattern(Constants.dateFormat));
+    public List<EventFullDto> get(
+            Set<Long> users,
+            Set<State> states,
+            Set<Long> categories,
+            LocalDateTime rangeStart,
+            LocalDateTime rangeEnd,
+            int from,
+            int size) {
+        System.out.println(users);
+        System.out.println(states);
+        System.out.println(categories);
+        System.out.println(rangeStart);
+        System.out.println(rangeEnd);
+        System.out.println(from);
+        System.out.println(size);
 
         if (rangeStart.isAfter(rangeEnd)) {
             throw new BadRequestException(Constants.eventDateError);

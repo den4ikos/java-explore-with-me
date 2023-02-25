@@ -49,7 +49,6 @@ public class AdminController {
             @PathVariable Long compId,
             @RequestBody UpdateCompilationRequest updateCompilationRequest,
             HttpServletRequest request) {
-        System.out.println("SJDBHSDHSHGSD " + updateCompilationRequest);
         LogHelper.dump(
                 Map.of("newCompilationDto", updateCompilationRequest, "compId", compId),
                 request
@@ -148,18 +147,18 @@ public class AdminController {
 
     @GetMapping(value = "/events")
     public List<EventFullDto> get(
-            @RequestParam @NotEmpty Set<Long> users,
-            @RequestParam @NotEmpty Set<State> states,
-            @RequestParam @NotEmpty Set<Long> categories,
-            @RequestParam @DateTimeFormat(pattern = Constants.dateFormat) String rangeStart,
-            @RequestParam @DateTimeFormat(pattern = Constants.dateFormat) String rangeEnd,
+            @RequestParam(required = false) Set<Long> users,
+            @RequestParam(required = false) Set<State> states,
+            @RequestParam(required = false) Set<Long> categories,
+            @RequestParam(required = false) @DateTimeFormat(pattern = Constants.dateFormat) String rangeStart,
+            @RequestParam(required = false) @DateTimeFormat(pattern = Constants.dateFormat) String rangeEnd,
             @Valid @PositiveOrZero @RequestParam(defaultValue = "0") int from,
             @Valid @Positive @RequestParam(defaultValue = "10") int size,
             HttpServletRequest request
     ) {
 
-        LocalDateTime start = DateWorkHelper.makeDateFromRequest("start", rangeStart);
-        LocalDateTime end = DateWorkHelper.makeDateFromRequest("end", rangeEnd);
+        LocalDateTime start = null == rangeStart ? LocalDateTime.now() : DateWorkHelper.makeDateFromRequest("start", rangeStart);
+        LocalDateTime end = null == rangeEnd ? LocalDateTime.now() : DateWorkHelper.makeDateFromRequest("end", rangeEnd);
         Map<String, Object> data = new HashMap<>();
         if (null != users) {
             data.put("users", users);
@@ -180,6 +179,6 @@ public class AdminController {
 
         LogHelper.dump(data, request);
 
-        return eventService.get(users, states, categories, rangeStart, rangeEnd, from, size);
+        return eventService.get(users, states, categories, start, end, from, size);
     }
 }
