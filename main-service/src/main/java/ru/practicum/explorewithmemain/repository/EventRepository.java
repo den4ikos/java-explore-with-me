@@ -20,7 +20,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query(value = "select e from Event e where e.state in :states")
     List<Event> findEventsByStates(@Param("states") Set<State> states, Pageable page);
 
-    @Query(value = "select e from Event e where e.state in :states and e.category.id in :categories and e.initiator in :users")
+    @Query(value = "select e from Event e where e.state in :states and e.category.id in :categories and e.initiator.id in :users")
     List<Event> findEventsByCategoriesAndUsersAndStates(@Param("categories") Set<Long> categories, @Param("users") Set<Long> users, @Param("states") Set<State> states, Pageable page);
 
     @Query(value = "select e from Event e where e.state in :states and e.category.id in :categories")

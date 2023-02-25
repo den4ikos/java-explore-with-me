@@ -9,12 +9,14 @@ import ru.practicum.explorewithmemain.Constants;
 import ru.practicum.explorewithmemain.dto.EventFullDto;
 import ru.practicum.explorewithmemain.dto.EventShortDto;
 import ru.practicum.explorewithmemain.dto.UpdateAdminEventDto;
+import ru.practicum.explorewithmemain.entity.Category;
 import ru.practicum.explorewithmemain.entity.Event;
 import ru.practicum.explorewithmemain.exception.BadRequestException;
 import ru.practicum.explorewithmemain.exception.ConflictException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
 import ru.practicum.explorewithmemain.helper.State;
 import ru.practicum.explorewithmemain.mapper.EventMapper;
+import ru.practicum.explorewithmemain.repository.CategoryRepository;
 import ru.practicum.explorewithmemain.repository.EventRepository;
 import ru.practicum.explorewithmemain.service.interfaces.EventService;
 
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
+    private final CategoryRepository categoryRepository;
     private final EventMapper eventMapper;
 
     @Override
@@ -63,13 +66,6 @@ public class EventServiceImpl implements EventService {
             LocalDateTime rangeEnd,
             int from,
             int size) {
-        System.out.println(users);
-        System.out.println(states);
-        System.out.println(categories);
-        System.out.println(rangeStart);
-        System.out.println(rangeEnd);
-        System.out.println(from);
-        System.out.println(size);
 
         if (rangeStart.isAfter(rangeEnd)) {
             throw new BadRequestException(Constants.eventDateError);
@@ -80,6 +76,8 @@ public class EventServiceImpl implements EventService {
             states.add(State.PUBLISHED);
             states.add(State.CANCELED);
             states.add(State.PENDING);
+            states.add(State.PUBLISH_EVENT);
+            states.add(State.REJECT_EVENT);
         }
 
         List<Event> events = new ArrayList<>();
@@ -121,15 +119,30 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventFullDto update(Long eventId, UpdateAdminEventDto eventDto) {
         Event currentEvent = eventRepository
                 .findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Event " + eventId)));
 
-        if (currentEvent.getState().equals(State.PUBLISHED)) {
-            throw new ConflictException(String.format(Constants.eventConflictStatus, currentEvent.getState()));
+        if (null != eventDto.getEventDate() && eventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
+            throw new ConflictException(Constants.startDateEarlier);
         }
 
-        return null;
+        if (!currentEvent.getState().equals(State.PENDING)) {
+            throw new ConflictException(Constants.eventPublishedConflict);
+        }
+
+        if (null != eventDto.getCategoryId()) {
+            Category category = categoryRepository
+                    .findById(eventDto.getCategoryId())
+                    .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Category with id " + eventDto.getCategoryId())));
+
+            currentEvent.setCategory(category);
+        }
+
+
+        Event eventToSave = eventMapper.fromFullDtoToEvent(currentEvent, eventDto);
+        return eventMapper.toFullDto(eventRepository.save(eventToSave));
     }
 }

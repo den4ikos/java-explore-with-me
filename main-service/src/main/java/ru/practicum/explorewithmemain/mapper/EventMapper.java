@@ -118,4 +118,43 @@ public class EventMapper {
                 .state(State.PENDING)
                 .build();
     }
+
+    public Event fromFullDtoToEvent(Event event, UpdateAdminEventDto eventFullDto) {
+        if (null != eventFullDto.getAnnotation()) {
+            event.setAnnotation(eventFullDto.getAnnotation());
+        }
+        if (null != eventFullDto.getAnnotation()) {
+            event.setDescription(eventFullDto.getDescription());
+        }
+
+        if (null != eventFullDto.getEventDate()) {
+            event.setEventDate(eventFullDto.getEventDate());
+        }
+
+        if (null != eventFullDto.getLocation()) {
+            event.setLocation(eventFullDto.getLocation());
+        }
+
+        if (null != eventFullDto.getPaid()) {
+            event.setPaid(eventFullDto.getPaid());
+        }
+
+        if (null != eventFullDto.getParticipantLimit()) {
+            event.setParticipantLimit(eventFullDto.getParticipantLimit());
+        }
+
+        if (null != eventFullDto.getRequestModeration()) {
+            event.setRequestModeration(eventFullDto.getRequestModeration());
+        }
+
+        if (null != eventFullDto.getStateAction()) {
+            event.setState(eventFullDto.getStateAction());
+        }
+
+        if (null != eventFullDto.getTitle()) {
+            event.setTitle(eventFullDto.getTitle());
+        }
+
+        return event;
+    }
 }

@@ -18,4 +18,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
     @Query("select r from Request r left join Event e on r.event = e where e = :event and e.initiator = :initiator")
     List<Request> getRequestsByEventAndEventInitiator(@Param("event") Event event, @Param("initiator") User initiator);
+
+    @Query("select r from Request r where r.event.id = :event and r.status = :status order by r.created")
+    List<Request> findAllByEventAndStatusOrderByCreatedAsc(@Param("event") Long event, @Param("status") Status status);
 }

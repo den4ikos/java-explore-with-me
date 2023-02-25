@@ -81,5 +81,18 @@ public class UserController {
         return userService.getEventRequestStatusUpdatedResult(userId, eventId);
     }
 
+    @PatchMapping(value = "/{userId}/events/{eventId}/requests")
+    public List<Object> changeRequestUserStatus(
+            @PathVariable Long userId,
+            @PathVariable Long eventId,
+            @RequestBody EventRequestUpdateStatusDto eventRequestUpdateStatusDto,
+            HttpServletRequest request) {
+        LogHelper.dump(
+                Map.of( "userId", userId, "eventId", eventId, "eventRequestUpdateStatusDto", eventRequestUpdateStatusDto),
+                request
+        );
+        return userService.getUpdatedRequestStatusEvent(eventRequestUpdateStatusDto, userId, eventId);
+    }
+
 
 }

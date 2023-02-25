@@ -18,12 +18,10 @@ import ru.practicum.explorewithmemain.entity.User;
 import ru.practicum.explorewithmemain.exception.BadRequestException;
 import ru.practicum.explorewithmemain.exception.ConflictException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
+import ru.practicum.explorewithmemain.helper.Helper;
 import ru.practicum.explorewithmemain.helper.State;
 import ru.practicum.explorewithmemain.helper.Status;
-import ru.practicum.explorewithmemain.mapper.CategoryMapper;
-import ru.practicum.explorewithmemain.mapper.EventMapper;
-import ru.practicum.explorewithmemain.mapper.RequestMapper;
-import ru.practicum.explorewithmemain.mapper.UserMapper;
+import ru.practicum.explorewithmemain.mapper.*;
 import ru.practicum.explorewithmemain.repository.CategoryRepository;
 import ru.practicum.explorewithmemain.repository.EventRepository;
 import ru.practicum.explorewithmemain.repository.RequestRepository;
@@ -31,6 +29,7 @@ import ru.practicum.explorewithmemain.repository.UserRepository;
 import ru.practicum.explorewithmemain.service.interfaces.UserService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +72,7 @@ public class UserServiceImpl implements UserService {
             throw new ConflictException(Constants.initiatorConflictMessage);
         }
 
-        if (!event.getState().equals(State.PUBLISHED)) {
+        if (event.getState().equals(State.PENDING)) {
             log.error(Constants.eventConflictMessage);
             throw new ConflictException(Constants.eventConflictMessage);
         }
@@ -90,7 +89,7 @@ public class UserServiceImpl implements UserService {
             User u = userRepository.save(UserMapper.toUser(userDto));
             return UserMapper.toUserDto(u);
         } catch (DataIntegrityViolationException e) {
-            log.error(String.format(Constants.emailAlreadyExists, userDto.getEmail()));
+            log.error("ERROR " + String.format(Constants.emailAlreadyExists, userDto.getEmail()));
             throw new ConflictException(String.format(Constants.emailAlreadyExists, userDto.getEmail()));
         }
     }
@@ -165,11 +164,10 @@ public class UserServiceImpl implements UserService {
         EventCreateDto ecd = eventMapper.toCreateDto(newEventDto, initiator, categoryDto);
 
         if (ecd.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new BadRequestException(Constants.eventDateError);
+            throw new ConflictException(Constants.eventDateError);
         }
 
         Event event = eventRepository.save(eventMapper.eventCreateDtoToEvent(ecd));
-
         return eventMapper.toFullDto(event);
     }
 
@@ -184,15 +182,18 @@ public class UserServiceImpl implements UserService {
                     .findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Event with id " + eventId)));
 
+        Event savedEvent;
+
         if (!u.getId().equals(e.getInitiator().getId())) {
             throw new ConflictException(Constants.initiatorCanceled);
         }
 
-        if (!State.PENDING.equals(e.getState())) {
+        if (State.PENDING.equals(e.getState()) || State.REJECT_EVENT.equals(e.getState())) {
+            e.setState(State.PENDING);
+            savedEvent = eventRepository.save(e);
+        } else {
             throw new ConflictException(Constants.eventCanceledConflict);
         }
-
-        Event savedEvent = eventRepository.save(e);
 
         return eventMapper.toFullDto(savedEvent);
     }
@@ -214,5 +215,38 @@ public class UserServiceImpl implements UserService {
         List<Request> results = requestRepository.getRequestsByEventAndEventInitiator(event, user);
 
         return RequestMapper.toListDto(results);
+    }
+
+    @Override
+    @Transactional
+    public List<Object> getUpdatedRequestStatusEvent(
+            EventRequestUpdateStatusDto eventRequestUpdateStatusDto,
+            Long userId,
+            Long eventId) {
+        List<Long> requestIds = eventRequestUpdateStatusDto.getRequestIds();
+        List<ParticipationRequestDto> participationRequestDtos = new ArrayList<>();
+
+        for (Long id : requestIds) {
+            Request r = requestRepository
+                    .findById(id)
+                    .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Request with id " + id)));
+
+            if (!r.getStatus().equals(Status.PENDING)) {
+                throw new ConflictException(Constants.updateRequestStatusConflict);
+            }
+
+            List<Request> requests = requestRepository.findAllByEventAndStatusOrderByCreatedAsc(eventId, Status.CONFIRMED);
+
+            if (Helper.isParticipationLimitLessOrEqualsRequests(r, requests)) {
+                throw new ConflictException(Constants.membershipLimitConflict);
+            } else {
+                r.setStatus(eventRequestUpdateStatusDto.getStatus());
+            }
+
+            participationRequestDtos.add(RequestMapper.toParticipationRequestDto(r));
+        }
+        List<Object> objects = new ArrayList<>();
+        objects.add(participationRequestDtos.stream().map(EventRequestStatusUpdateRequestMapper::rejectedRequestDto));
+        return objects;
     }
 }
