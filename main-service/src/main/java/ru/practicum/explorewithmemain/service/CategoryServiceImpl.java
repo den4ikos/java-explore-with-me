@@ -100,7 +100,11 @@ public class CategoryServiceImpl implements CategoryService {
             throw new NotFoundException(String.format(Constants.notFoundError, "Category " + catId));
         }
 
+        if (categoryRepository.existsByName(categoryDto.getName())) {
+            throw new ConflictException(String.format(Constants.alreadyExists, "Category", categoryDto.getName()));
+        }
+
         Category category = categoryMapper.fromUpdateCategoryDtoToCategory(categoryDto, catId);
-        return categoryMapper.toDto(category);
+        return categoryMapper.toDto(categoryRepository.save(category));
     }
 }

@@ -9,6 +9,7 @@ import ru.practicum.explorewithmemain.entity.User;
 import ru.practicum.explorewithmemain.helper.Status;
 
 import java.util.List;
+import java.util.Map;
 
 public interface RequestRepository extends JpaRepository<Request, Long> {
 
@@ -21,4 +22,8 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
     @Query("select r from Request r where r.event.id = :event and r.status = :status order by r.created")
     List<Request> findAllByEventAndStatusOrderByCreatedAsc(@Param("event") Long event, @Param("status") Status status);
+
+    boolean existsByRequestorIdAndEventId(Long userId, Long eventId);
+
+    int countByEventId(Long id);
 }

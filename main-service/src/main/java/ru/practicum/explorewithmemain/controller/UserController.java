@@ -82,7 +82,7 @@ public class UserController {
     }
 
     @PatchMapping(value = "/{userId}/events/{eventId}/requests")
-    public List<Object> changeRequestUserStatus(
+    public List<ParticipationRequestDto> changeRequestUserStatus(
             @PathVariable Long userId,
             @PathVariable Long eventId,
             @RequestBody EventRequestUpdateStatusDto eventRequestUpdateStatusDto,

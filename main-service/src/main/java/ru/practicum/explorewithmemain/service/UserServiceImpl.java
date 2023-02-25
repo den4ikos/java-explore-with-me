@@ -3,6 +3,7 @@ package ru.practicum.explorewithmemain.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.bcel.Const;
+import org.bouncycastle.cert.ocsp.Req;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
@@ -66,6 +67,16 @@ public class UserServiceImpl implements UserService {
         Event event = eventRepository
                 .findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format(Constants.eventNotFound, eventId)));
+        int requests = requestRepository.countByEventId(event.getId());
+
+        if (event.getParticipantLimit() >= requests) {
+            throw new ConflictException(Constants.membershipLimitConflict);
+        }
+
+        if (requestRepository.existsByRequestorIdAndEventId(user.getId(), event.getId())) {
+            throw new ConflictException(String.format(Constants.alreadyExists, "Request", "user: " + user.getId() + " and event: " + event.getId()));
+        }
+
 
         if (event.getInitiator().getId().equals(userId)) {
             log.error(Constants.initiatorConflictMessage);
@@ -219,7 +230,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public List<Object> getUpdatedRequestStatusEvent(
+    public List<ParticipationRequestDto> getUpdatedRequestStatusEvent(
             EventRequestUpdateStatusDto eventRequestUpdateStatusDto,
             Long userId,
             Long eventId) {
@@ -245,8 +256,6 @@ public class UserServiceImpl implements UserService {
 
             participationRequestDtos.add(RequestMapper.toParticipationRequestDto(r));
         }
-        List<Object> objects = new ArrayList<>();
-        objects.add(participationRequestDtos.stream().map(EventRequestStatusUpdateRequestMapper::rejectedRequestDto));
-        return objects;
+        return participationRequestDtos;
     }
 }
