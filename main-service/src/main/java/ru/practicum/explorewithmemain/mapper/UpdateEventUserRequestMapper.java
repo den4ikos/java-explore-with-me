@@ -46,8 +46,10 @@ public class UpdateEventUserRequestMapper {
             event.setTitle(updateEventUserRequestDto.getTitle());
         }
 
-        if (State.PENDING.equals(event.getState()) || State.REJECT_EVENT.equals(event.getState())) {
+        if (State.SEND_TO_REVIEW.equals(updateEventUserRequestDto.getStateAction())) {
             event.setState(State.PENDING);
+        } else if (State.PENDING.equals(event.getState()) || State.REJECT_EVENT.equals(event.getState())) {
+            event.setState(State.CANCELED);
         } else {
             throw new ConflictException(Constants.eventCanceledConflict);
         }

@@ -42,6 +42,12 @@ public class UserController {
         return userService.createUserRequest(userId, eventId);
     }
 
+    @PatchMapping(value = "/{userId}/requests/{requestId}/cancel")
+    public ParticipationRequestDto cancelUserEventRequest(@PathVariable Long userId, @PathVariable Long requestId, HttpServletRequest request) {
+        LogHelper.dump(Map.of("userId", userId, "requestId", requestId), request);
+        return userService.cancelUserEventRequest(userId, requestId);
+    }
+
     @GetMapping(value = "/{userId}/events")
     public List<EventShortDto> getUserEvents(
         @PathVariable Long userId,
@@ -107,6 +113,4 @@ public class UserController {
         );
         return userService.getUpdatedRequestStatusEvent(eventRequestUpdateStatusDto, userId, eventId);
     }
-
-
 }

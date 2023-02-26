@@ -261,4 +261,18 @@ public class UserServiceImpl implements UserService {
         }
         return eventMapper.toFullDto(event);
     }
+
+    @Override
+    @Transactional
+    public ParticipationRequestDto cancelUserEventRequest(Long userId, Long requestId) {
+        Request request = requestRepository.findByIdAndRequestorId(requestId, userId);
+
+        if (null == request) {
+            throw new NotFoundException(String.format(Constants.notFoundError, "Request with id " + requestId));
+        }
+
+        request.setStatus(Status.CANCELED);
+
+        return RequestMapper.toParticipationRequestDto(request);
+    }
 }

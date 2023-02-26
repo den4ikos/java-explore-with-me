@@ -28,4 +28,6 @@ public interface UserService {
     Map<String, List<ParticipationRequestDto>> getUpdatedRequestStatusEvent(EventRequestUpdateStatusDto eventRequestUpdateStatusDto, Long userId, Long eventId);
 
     EventFullDto getFullUserEventInfo(Long userId, Long eventId);
+
+    ParticipationRequestDto cancelUserEventRequest(Long userId, Long requestId);
 }
