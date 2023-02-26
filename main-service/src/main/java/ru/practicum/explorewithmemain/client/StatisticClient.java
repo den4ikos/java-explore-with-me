@@ -7,7 +7,7 @@ import ru.practicum.explorewithmemain.dto.ViewStatisticDto;
 
 import java.util.List;
 
-@FeignClient(value = "stats", url = "http://localhost:9090/")
+@FeignClient(value = "stats", url = "http://statistics-server:9090")
 public interface StatisticClient {
     @RequestMapping(method = RequestMethod.GET, value = "/stats?start={start}&end={end}&uris={uris}&unique={unique}")
     List<ViewStatisticDto> getStatistics(@PathVariable String start, @PathVariable String end, @PathVariable String[] uris, @PathVariable Boolean unique);
