@@ -69,9 +69,10 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException(String.format(Constants.eventNotFound, eventId)));
         int requests = requestRepository.countByEventId(event.getId());
 
-        if (event.getParticipantLimit() >= requests) {
+        if (event.getParticipantLimit() <= requests) {
             throw new ConflictException(Constants.membershipLimitConflict);
         }
+
 
         if (requestRepository.existsByRequestorIdAndEventId(user.getId(), event.getId())) {
             throw new ConflictException(String.format(Constants.alreadyExists, "Request", "user: " + user.getId() + " and event: " + event.getId()));

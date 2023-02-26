@@ -8,11 +8,11 @@ import java.util.Map;
 @Slf4j
 public class LogHelper {
     public static void dump(Map<String, Object> params, HttpServletRequest request) {
-        StringBuilder message = new StringBuilder("Query to endpoint ");
+        StringBuilder message = new StringBuilder("\n\nQuery to endpoint ");
         message.append(request.getRequestURI()).append(" ");
         message.append("with params: ");
         for (String p: params.keySet()) {
-            message.append("'").append(p).append("'").append(": ").append(params.get(p)).append(" ");
+            message.append("'").append(p).append("'").append(": ").append(params.get(p)).append("\n");
         }
         log.info(message.toString());
     }
