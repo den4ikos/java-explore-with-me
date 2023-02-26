@@ -19,7 +19,7 @@ public class UpdateEventUserRequestMapper {
         }
 
         if (null != updateEventUserRequestDto.getEventDate()) {
-            if (updateEventUserRequestDto.getEventDate().isBefore(LocalDateTime.now())) {
+            if (updateEventUserRequestDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
                 throw new ConflictException(Constants.dateScheduleConflict);
             } else {
                 event.setEventDate(updateEventUserRequestDto.getEventDate());
