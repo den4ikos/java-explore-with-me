@@ -64,9 +64,13 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}/events/{eventId}")
-    public EventFullDto cancelEvent(@PathVariable Long userId, @PathVariable Long eventId, HttpServletRequest request) {
-        LogHelper.dump(Map.of("userId", userId, "eventId", eventId), request);
-        return userService.cancelEvent(userId, eventId);
+    public EventFullDto cancelEvent(
+            @PathVariable Long userId,
+            @PathVariable Long eventId,
+            @Valid @RequestBody UpdateEventUserRequestDto updateEventUserRequestDto,
+            HttpServletRequest request) {
+        LogHelper.dump(Map.of("updateEventUserRequestDto", updateEventUserRequestDto, "userId", userId, "eventId", eventId), request);
+        return userService.cancelEvent(userId, eventId, updateEventUserRequestDto);
     }
 
     @GetMapping(value = "/{userId}/events/{eventId}/requests")

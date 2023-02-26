@@ -21,7 +21,7 @@ public interface UserService {
 
     EventFullDto createUserEvent(NewEventDto newEventDto, Long userId);
 
-    EventFullDto cancelEvent(Long userId, Long eventId);
+    EventFullDto cancelEvent(Long userId, Long eventId, UpdateEventUserRequestDto updateEventUserRequestDto);
 
     List<ParticipationRequestDto> getEventRequestStatusUpdatedResult(Long userId, Long eventId);
 
