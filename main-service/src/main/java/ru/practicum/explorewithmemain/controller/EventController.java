@@ -2,6 +2,7 @@ package ru.practicum.explorewithmemain.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explorewithmemain.dto.EventFullDto;
 import ru.practicum.explorewithmemain.dto.EventShortDto;
 import ru.practicum.explorewithmemain.helper.DateWorkHelper;
 import ru.practicum.explorewithmemain.helper.LogHelper;
@@ -80,5 +81,11 @@ public class EventController {
         ));
 
         return eventService.getShort(data);
+    }
+
+    @GetMapping(value = "/{id}")
+    public EventFullDto getEventFullInformation (@PathVariable Long id, HttpServletRequest request) {
+        LogHelper.dump(Map.of("id", id), request);
+        return eventService.getFull(id, request);
     }
 }

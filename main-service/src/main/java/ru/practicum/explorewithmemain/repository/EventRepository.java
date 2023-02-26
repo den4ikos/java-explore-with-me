@@ -34,4 +34,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query(value = "select e from Event e where lower(e.annotation) like concat('%',lower(:text),'%') or lower(e.description) like concat('%',lower(:text),'%')")
     List<Event> findEventsForPublicByText(@Param("text") String text);
+
+    Event findByIdAndStateIn(Long id, Set<State> states);
 }

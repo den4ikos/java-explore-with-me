@@ -33,12 +33,12 @@ public class EventMapper {
                 .id(event.getId())
                 .annotation(event.getAnnotation())
                 .categoryDto(new CategoryDto(cat.getId(), cat.getName()))
-                .confirmedRequest(confirmRequestsCount)
+                .confirmedRequests(confirmRequestsCount)
                 .eventDate(event.getEventDate())
                 .initiator(new UserShortDto(initiator.getId(), initiator.getName()))
                 .paid(event.getPaid())
                 .title(event.getTitle())
-                .hits(viewsCount)
+                .views(viewsCount)
                 .build();
     }
 

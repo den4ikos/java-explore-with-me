@@ -15,10 +15,10 @@ public class EventShortDto {
     private String annotation;
     @JsonProperty("category")
     private CategoryDto categoryDto;
-    private Long confirmedRequest;
+    private Long confirmedRequests;
     private LocalDateTime eventDate;
     private UserShortDto initiator;
     private Boolean paid;
     private String title;
-    private Long hits;
+    private Long views;
 }

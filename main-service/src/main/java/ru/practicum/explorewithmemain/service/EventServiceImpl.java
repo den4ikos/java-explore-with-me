@@ -6,8 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithmemain.Constants;
+import ru.practicum.explorewithmemain.client.StatisticClient;
 import ru.practicum.explorewithmemain.dto.EventFullDto;
 import ru.practicum.explorewithmemain.dto.EventShortDto;
+import ru.practicum.explorewithmemain.dto.HitDto;
 import ru.practicum.explorewithmemain.dto.UpdateAdminEventDto;
 import ru.practicum.explorewithmemain.entity.Category;
 import ru.practicum.explorewithmemain.entity.Event;
@@ -20,6 +22,7 @@ import ru.practicum.explorewithmemain.repository.CategoryRepository;
 import ru.practicum.explorewithmemain.repository.EventRepository;
 import ru.practicum.explorewithmemain.service.interfaces.EventService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
+    private final StatisticClient statisticClient;
     private final EventMapper eventMapper;
 
     @Override
@@ -109,6 +113,31 @@ public class EventServiceImpl implements EventService {
                 .stream()
                 .map(eventMapper::toFullDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public EventFullDto getFull(Long id, HttpServletRequest request) {
+        Set<State> states = new HashSet<>(Arrays.asList(State.PUBLISH_EVENT, State.PUBLISH_EVENT));
+        Event event = eventRepository
+                .findByIdAndStateIn(id, states);
+
+        if (null == event) {
+            throw new NotFoundException(String.format(Constants.notFoundError, "Event wit id " + id));
+        }
+
+        HitDto hitDto = HitDto
+                .builder()
+                .id(null)
+                .app(Constants.app)
+                .uri(request.getRequestURI())
+                .ip(request.getRemoteAddr())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        statisticClient.setEventHit(hitDto);
+
+        return eventMapper.toFullDto(event);
     }
 
     @Override
