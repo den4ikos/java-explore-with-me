@@ -221,7 +221,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public Map<String, List<ParticipationRequestDto>> getUpdatedRequestStatusEvent(EventRequestUpdateStatusDto eventRequestUpdateStatusDto, Long userId, Long eventId) {
         List<Long> requestIds = null != eventRequestUpdateStatusDto ? eventRequestUpdateStatusDto.getRequestIds() : new ArrayList<>();
-        List<ParticipationRequestDto> participationRequestDtos = new ArrayList<>();
+        List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
+        List<ParticipationRequestDto> confirmedRequests = new ArrayList<>();
         if (!requestIds.isEmpty()) {
             for (Long id : requestIds) {
                 Request r = requestRepository
@@ -240,11 +241,12 @@ public class UserServiceImpl implements UserService {
 
                 r.setStatus(eventRequestUpdateStatusDto.getStatus());
 
-                participationRequestDtos.add(RequestMapper.toParticipationRequestDto(r));
+                rejectedRequests.add(RequestMapper.toParticipationRequestDto(r));
+                confirmedRequests.add(RequestMapper.toParticipationRequestDto(r));
             }
         }
 
-        return Map.of("rejectedRequests", participationRequestDtos);
+        return Map.of("rejectedRequests", rejectedRequests, "confirmedRequests", confirmedRequests);
     }
 
     @Override
