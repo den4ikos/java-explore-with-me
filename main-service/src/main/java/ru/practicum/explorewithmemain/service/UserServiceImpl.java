@@ -246,4 +246,19 @@ public class UserServiceImpl implements UserService {
 
         return Map.of("rejectedRequests", participationRequestDtos);
     }
+
+    @Override
+    @Transactional
+    public EventFullDto getFullUserEventInfo(Long userId, Long eventId) {
+        User initiator = userRepository
+                .findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "User with id " + userId)));
+
+        Event event = eventRepository.findByIdAndInitiator(eventId, initiator);
+
+        if (null == event) {
+            throw new NotFoundException(String.format(Constants.notFoundError, "Event with id " + eventId));
+        }
+        return eventMapper.toFullDto(event);
+    }
 }

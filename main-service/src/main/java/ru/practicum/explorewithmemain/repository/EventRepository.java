@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.practicum.explorewithmemain.entity.Event;
+import ru.practicum.explorewithmemain.entity.User;
 import ru.practicum.explorewithmemain.helper.State;
 
 import java.util.List;
@@ -36,4 +37,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findEventsForPublicByText(@Param("text") String text);
 
     Event findByIdAndStateIn(Long id, Set<State> states);
+
+    Event findByIdAndInitiator(Long eventId, User user);
 }

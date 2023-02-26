@@ -64,6 +64,12 @@ public class UserController {
         return userService.createUserEvent(newEventDto, userId);
     }
 
+    @GetMapping(value = "/{userId}/events/{eventId}")
+    public EventFullDto getFullUserEvent(@PathVariable Long userId, @PathVariable Long eventId, HttpServletRequest request) {
+        LogHelper.dump(Map.of("userId", userId, "eventId", eventId), request);
+        return userService.getFullUserEventInfo(userId, eventId);
+    }
+
     @PatchMapping("/{userId}/events/{eventId}")
     public EventFullDto cancelEvent(
             @PathVariable Long userId,
