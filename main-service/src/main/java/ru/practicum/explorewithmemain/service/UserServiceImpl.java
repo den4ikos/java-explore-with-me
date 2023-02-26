@@ -2,8 +2,6 @@ package ru.practicum.explorewithmemain.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.bcel.Const;
-import org.bouncycastle.cert.ocsp.Req;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +17,6 @@ import ru.practicum.explorewithmemain.entity.User;
 import ru.practicum.explorewithmemain.exception.BadRequestException;
 import ru.practicum.explorewithmemain.exception.ConflictException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
-import ru.practicum.explorewithmemain.helper.Helper;
 import ru.practicum.explorewithmemain.helper.State;
 import ru.practicum.explorewithmemain.helper.Status;
 import ru.practicum.explorewithmemain.mapper.*;
@@ -67,12 +64,12 @@ public class UserServiceImpl implements UserService {
         Event event = eventRepository
                 .findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format(Constants.eventNotFound, eventId)));
+
         int requests = requestRepository.countByEventId(event.getId());
 
         if (event.getParticipantLimit() <= requests) {
             throw new ConflictException(Constants.membershipLimitConflict);
         }
-
 
         if (requestRepository.existsByRequestorIdAndEventId(user.getId(), event.getId())) {
             throw new ConflictException(String.format(Constants.alreadyExists, "Request", "user: " + user.getId() + " and event: " + event.getId()));
@@ -205,9 +202,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public List<ParticipationRequestDto> getEventRequestStatusUpdatedResult(
-            Long userId,
-            Long eventId) {
+    public List<ParticipationRequestDto> getEventRequestStatusUpdatedResult(Long userId, Long eventId) {
 
         User user = userRepository
                 .findById(userId)
@@ -224,32 +219,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public List<ParticipationRequestDto> getUpdatedRequestStatusEvent(
-            EventRequestUpdateStatusDto eventRequestUpdateStatusDto,
-            Long userId,
-            Long eventId) {
-        List<Long> requestIds = eventRequestUpdateStatusDto.getRequestIds();
+    public Map<String, List<ParticipationRequestDto>> getUpdatedRequestStatusEvent(EventRequestUpdateStatusDto eventRequestUpdateStatusDto, Long userId, Long eventId) {
+        List<Long> requestIds = null != eventRequestUpdateStatusDto ? eventRequestUpdateStatusDto.getRequestIds() : new ArrayList<>();
         List<ParticipationRequestDto> participationRequestDtos = new ArrayList<>();
+        if (!requestIds.isEmpty()) {
+            for (Long id : requestIds) {
+                Request r = requestRepository
+                        .findById(id)
+                        .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Request with id " + id)));
 
-        for (Long id : requestIds) {
-            Request r = requestRepository
-                    .findById(id)
-                    .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Request with id " + id)));
+                if (!r.getStatus().equals(Status.PENDING)) {
+                    throw new ConflictException(Constants.updateRequestStatusConflict);
+                }
 
-            if (!r.getStatus().equals(Status.PENDING)) {
-                throw new ConflictException(Constants.updateRequestStatusConflict);
-            }
+                int requestsCount = requestRepository.countByEventId(eventId);
 
-            List<Request> requests = requestRepository.findAllByEventAndStatusOrderByCreatedAsc(eventId, Status.CONFIRMED);
+                if (r.getEvent().getParticipantLimit() <= requestsCount) {
+                    throw new ConflictException(Constants.membershipLimitConflict);
+                }
 
-            if (Helper.isParticipationLimitLessOrEqualsRequests(r, requests)) {
-                throw new ConflictException(Constants.membershipLimitConflict);
-            } else {
                 r.setStatus(eventRequestUpdateStatusDto.getStatus());
-            }
 
-            participationRequestDtos.add(RequestMapper.toParticipationRequestDto(r));
+                participationRequestDtos.add(RequestMapper.toParticipationRequestDto(r));
+            }
         }
-        return participationRequestDtos;
+
+        return Map.of("rejectedRequests", participationRequestDtos);
     }
 }

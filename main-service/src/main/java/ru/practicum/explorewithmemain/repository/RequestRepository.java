@@ -26,4 +26,6 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     boolean existsByRequestorIdAndEventId(Long userId, Long eventId);
 
     int countByEventId(Long id);
+
+    Long countByEventIdAndStatus(Long eventId, Status confirmed);
 }

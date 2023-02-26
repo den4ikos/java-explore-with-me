@@ -25,5 +25,5 @@ public interface UserService {
 
     List<ParticipationRequestDto> getEventRequestStatusUpdatedResult(Long userId, Long eventId);
 
-    List<ParticipationRequestDto> getUpdatedRequestStatusEvent(EventRequestUpdateStatusDto eventRequestUpdateStatusDto, Long userId, Long eventId);
+    Map<String, List<ParticipationRequestDto>> getUpdatedRequestStatusEvent(EventRequestUpdateStatusDto eventRequestUpdateStatusDto, Long userId, Long eventId);
 }

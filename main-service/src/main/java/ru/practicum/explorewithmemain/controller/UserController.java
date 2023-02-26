@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithmemain.dto.*;
+import ru.practicum.explorewithmemain.exception.ConflictException;
 import ru.practicum.explorewithmemain.helper.LogHelper;
 import ru.practicum.explorewithmemain.service.interfaces.UserService;
 
@@ -86,13 +87,16 @@ public class UserController {
     }
 
     @PatchMapping(value = "/{userId}/events/{eventId}/requests")
-    public List<ParticipationRequestDto> changeRequestUserStatus(
+    public Map<String, List<ParticipationRequestDto>> changeRequestUserStatus(
             @PathVariable Long userId,
             @PathVariable Long eventId,
-            @RequestBody EventRequestUpdateStatusDto eventRequestUpdateStatusDto,
+            @Valid @RequestBody(required = false) EventRequestUpdateStatusDto eventRequestUpdateStatusDto,
             HttpServletRequest request) {
+        if (null == eventRequestUpdateStatusDto) {
+            throw new ConflictException("");
+        }
         LogHelper.dump(
-                Map.of( "userId", userId, "eventId", eventId, "eventRequestUpdateStatusDto", eventRequestUpdateStatusDto),
+                Map.of( "userId", userId, "eventId", eventId),
                 request
         );
         return userService.getUpdatedRequestStatusEvent(eventRequestUpdateStatusDto, userId, eventId);
