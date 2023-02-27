@@ -9,9 +9,9 @@ import java.util.List;
 
 @FeignClient(value = "stats", url = "http://statistics-server:9090")
 public interface StatisticClient {
-    @RequestMapping(method = RequestMethod.GET, value = "/stats?start={start}&end={end}&uris={uris}&unique={unique}")
+    @GetMapping(value = "/stats?start={start}&end={end}&uris={uris}&unique={unique}")
     List<ViewStatisticDto> getStatistics(@PathVariable String start, @PathVariable String end, @PathVariable String[] uris, @PathVariable Boolean unique);
 
-    @RequestMapping(method = RequestMethod.POST, value = "/hit")
+    @PostMapping(value = "/hit")
     void setEventHit(@RequestBody HitDto hitDto);
 }
