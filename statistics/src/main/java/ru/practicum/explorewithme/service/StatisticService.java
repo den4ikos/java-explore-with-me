@@ -2,11 +2,9 @@ package ru.practicum.explorewithme.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.Constants;
-import ru.practicum.explorewithme.dto.AppDto;
 import ru.practicum.explorewithme.dto.HitDto;
 import ru.practicum.explorewithme.dto.HitDtoInterface;
 import ru.practicum.explorewithme.dto.StatisticDto;

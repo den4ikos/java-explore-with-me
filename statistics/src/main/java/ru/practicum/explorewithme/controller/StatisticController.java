@@ -2,11 +2,11 @@ package ru.practicum.explorewithme.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explorewithme.dto.AppDto;
 import ru.practicum.explorewithme.dto.HitDto;
 import ru.practicum.explorewithme.dto.StatisticDto;
-import ru.practicum.explorewithme.log.LogHelper;
+import ru.practicum.explorewithme.helper.LogHelper;
 import ru.practicum.explorewithme.service.interfaces.StatsService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +22,7 @@ public class StatisticController {
     private final StatsService statisticService;
 
     @PostMapping(value = "/hit")
+    @ResponseStatus(value = HttpStatus.CREATED)
     public HitDto hit(@RequestBody HitDto hitDto, HttpServletRequest request) {
         LogHelper.dump(
                 Map.of("hitDto", hitDto),
