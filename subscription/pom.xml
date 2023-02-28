@@ -8,10 +8,10 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>explore-with-me-main</artifactId>
+    <artifactId>explore-with-me-subscription</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <name>Main Service</name>
+    <name>Subscription</name>
 
     <properties>
         <org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
@@ -36,12 +36,6 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
 
