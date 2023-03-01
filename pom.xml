@@ -25,7 +25,6 @@
 	<modules>
 		<module>statistics</module>
 		<module>main-service</module>
-		<module>subscription</module>
 	</modules>
 
 	<build>
