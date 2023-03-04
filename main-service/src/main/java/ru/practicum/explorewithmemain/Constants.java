@@ -21,4 +21,5 @@ public class Constants {
     public static final String updateRequestStatusConflict = "Status can only be changed for applications that are in the pending state";
     public static final String membershipLimitConflict = "Membership limit reached";
     public static final String dateScheduleConflict = "The date and time for which the event is scheduled cannot be earlier than two hours from the current moment";
+    public static final String addSubscriptionToUnpublishedEventError = "You can't subscribe to an unpublished event";
 }
