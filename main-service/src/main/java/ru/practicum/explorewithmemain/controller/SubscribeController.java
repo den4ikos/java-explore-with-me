@@ -15,9 +15,17 @@ import java.util.Map;
 public class SubscribeController {
     private final SubscriberService subscriberService;
 
-    @PostMapping(value = "/{userId}/request")
-    public SubscribeDto sendRequest(@PathVariable Long userId, HttpServletRequest request) {
-        LogHelper.dump(Map.of("userId", userId), request);
-        return subscriberService.sendRequest(userId);
+    @PostMapping(value = "/{subscriberId}/request/{signatoryId}/event/{eventId}")
+    public SubscribeDto sendRequest(
+            @PathVariable Long subscriberId,
+            @PathVariable Long signatoryId,
+            @PathVariable Long eventId,
+            HttpServletRequest request) {
+        LogHelper.dump(Map.of(
+                "subscriberId", subscriberId,
+                "signatoryId", signatoryId,
+                "eventId", eventId
+        ), request);
+        return subscriberService.sendRequest(subscriberId, signatoryId, eventId);
     }
 }

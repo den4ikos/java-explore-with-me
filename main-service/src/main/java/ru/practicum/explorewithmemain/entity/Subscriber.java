@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "subscribers")
 public class Subscriber {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
     @JoinColumn(name = "subscriber_id")
