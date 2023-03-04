@@ -10,7 +10,6 @@ import ru.practicum.explorewithmemain.helper.SubscriptionHelper;
 import ru.practicum.explorewithmemain.service.interfaces.SubscriberService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Locale;
 import java.util.Map;
 
 @RestController
@@ -74,5 +73,11 @@ public class SubscribeController {
                 "status", statusForUpdate
         ), request);
         return subscriberService.updateSubscriptionStatue(id, signatoryId, eventId, statusForUpdate);
+    }
+
+    @PatchMapping(value = "/{id}/{subscriberId}/reject")
+    public SubscribeDto rejectSubscription(@PathVariable(name = "id") Long subscriptionId, @PathVariable Long subscriberId, HttpServletRequest request) {
+        LogHelper.dump(Map.of("subscriberId", subscriptionId), request);
+        return subscriberService.rejectSubscription(subscriptionId, subscriberId);
     }
 }

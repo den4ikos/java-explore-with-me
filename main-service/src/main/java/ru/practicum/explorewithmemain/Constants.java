@@ -22,5 +22,5 @@ public class Constants {
     public static final String membershipLimitConflict = "Membership limit reached";
     public static final String dateScheduleConflict = "The date and time for which the event is scheduled cannot be earlier than two hours from the current moment";
     public static final String addSubscriptionToUnpublishedEventError = "You can't subscribe to an unpublished event";
-    public static final String signatorySubscriptionConflict = "You have no permission to this action";
+    public static final String accessibleConflict = "You have no permission to this action";
 }

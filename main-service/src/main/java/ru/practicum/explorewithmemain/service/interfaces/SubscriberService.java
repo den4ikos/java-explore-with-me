@@ -15,4 +15,6 @@ public interface SubscriberService {
     SubscribeDto getSubscribeByEventId(Long eventId);
 
     SubscribeDto updateSubscriptionStatue(Long id, Long signatoryId, Long eventID, SubscriberStatus status);
+
+    SubscribeDto rejectSubscription(Long subscriptionId, Long subscriberId);
 }
