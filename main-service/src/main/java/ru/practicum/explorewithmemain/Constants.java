@@ -16,10 +16,11 @@ public class Constants {
     public static final String eventCanceledConflict = "Only events with pending status can be canceled";
     public static final String eventPublishedConflict = "Only events with pending status can be published";
     public static final String categoryEventsCount = "You can not remove this category";
-    public static final String eventConflictStatus = "Cannot publish the event because it's not in the right state: %s";
+    public static final String eventSubscribeConflictStatus = "You can't confirm or reject unpublished event";
     public static final String startDateEarlier = "The start date of the event to be changed must be no earlier than one hour from the publication date";
     public static final String updateRequestStatusConflict = "Status can only be changed for applications that are in the pending state";
     public static final String membershipLimitConflict = "Membership limit reached";
     public static final String dateScheduleConflict = "The date and time for which the event is scheduled cannot be earlier than two hours from the current moment";
     public static final String addSubscriptionToUnpublishedEventError = "You can't subscribe to an unpublished event";
+    public static final String signatorySubscriptionConflict = "You have no permission to this action";
 }

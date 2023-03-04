@@ -12,6 +12,8 @@ import ru.practicum.explorewithmemain.entity.User;
 import ru.practicum.explorewithmemain.exception.ConflictException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
 import ru.practicum.explorewithmemain.helper.State;
+import ru.practicum.explorewithmemain.helper.SubscriberStatus;
+import ru.practicum.explorewithmemain.helper.SubscriptionHelper;
 import ru.practicum.explorewithmemain.mapper.SubscriberMapper;
 import ru.practicum.explorewithmemain.repository.EventRepository;
 import ru.practicum.explorewithmemain.repository.SubscribeRepository;
@@ -53,8 +55,6 @@ public class SubscriberServiceImpl implements SubscriberService {
         if (null == subscribe) {
             throw new NotFoundException(String.format(Constants.notFoundError, "Subscribe for subscriber " + subscriberId));
         }
-
-        System.out.println("\n\n\n\n\nAZZAZ " + subscribe);
 
         return SubscriberMapper.toDto(subscribe);
     }
@@ -106,10 +106,7 @@ public class SubscriberServiceImpl implements SubscriberService {
                 .findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Event with ID " + eventId)));
 
-        State[] statesArray = new State[]{State.PUBLISHED, State.PUBLISH_EVENT};
-        List<State> allowedStates = Arrays.asList(statesArray);
-
-        if (!allowedStates.contains(event.getState())) {
+        if (!SubscriptionHelper.getAllowedStates().contains(event.getState())) {
             throw new ConflictException(Constants.addSubscriptionToUnpublishedEventError);
         }
 
@@ -118,5 +115,31 @@ public class SubscriberServiceImpl implements SubscriberService {
         Subscriber savedSubscriber = subscribeRepository.save(SubscriberMapper.toNewSubscriberModel(subscribeDto));
 
         return SubscriberMapper.toDto(savedSubscriber);
+    }
+
+    @Override
+    @Transactional
+    public SubscribeDto updateSubscriptionStatue(Long id, Long signatoryId, Long eventId, SubscriberStatus status) {
+        Subscriber subscription = subscribeRepository
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Subscription with id " + id)));
+
+        if (!subscription.getSignatory().getId().equals(signatoryId)) {
+            throw new ConflictException(Constants.signatorySubscriptionConflict);
+        }
+
+        Event event = eventRepository
+                .findById(eventId)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Event with id " + eventId)));
+
+        if (!SubscriptionHelper.getAllowedStates().contains(event.getState())) {
+            throw new ConflictException(Constants.eventSubscribeConflictStatus);
+        }
+
+        subscription.setStatus(status);
+
+        Subscriber updatedSubscriber = subscribeRepository.save(subscription);
+
+        return SubscriberMapper.toDto(updatedSubscriber);
     }
 }

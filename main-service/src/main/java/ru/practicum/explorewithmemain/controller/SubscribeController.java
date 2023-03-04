@@ -5,9 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithmemain.dto.SubscribeDto;
 import ru.practicum.explorewithmemain.helper.LogHelper;
+import ru.practicum.explorewithmemain.helper.SubscriberStatus;
+import ru.practicum.explorewithmemain.helper.SubscriptionHelper;
 import ru.practicum.explorewithmemain.service.interfaces.SubscriberService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Locale;
 import java.util.Map;
 
 @RestController
@@ -53,5 +56,23 @@ public class SubscribeController {
                 "eventId", eventId
         ), request);
         return subscriberService.sendRequest(subscriberId, signatoryId, eventId);
+    }
+
+    @PatchMapping(value = "/{id}/signatory/{signatoryId}/event/{eventId}/confirm")
+    public SubscribeDto confirmSubscription(
+            @PathVariable Long id,
+            @PathVariable Long signatoryId,
+            @PathVariable Long eventId,
+            @RequestParam(required = false) String status,
+            HttpServletRequest request) {
+        SubscriberStatus statusForUpdate = SubscriptionHelper.convertFromString(status);
+
+        LogHelper.dump(Map.of(
+                "id", id,
+                "signatoryId", signatoryId,
+                "eventId", eventId,
+                "status", statusForUpdate
+        ), request);
+        return subscriberService.updateSubscriptionStatue(id, signatoryId, eventId, statusForUpdate);
     }
 }

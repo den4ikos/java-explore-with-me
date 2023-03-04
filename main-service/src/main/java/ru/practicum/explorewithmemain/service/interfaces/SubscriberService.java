@@ -1,6 +1,7 @@
 package ru.practicum.explorewithmemain.service.interfaces;
 
 import ru.practicum.explorewithmemain.dto.SubscribeDto;
+import ru.practicum.explorewithmemain.helper.SubscriberStatus;
 
 public interface SubscriberService {
     SubscribeDto getSubscribeById(Long id);
@@ -12,4 +13,6 @@ public interface SubscriberService {
     SubscribeDto getSubscribeBySignatoryId(Long signatoryId);
 
     SubscribeDto getSubscribeByEventId(Long eventId);
+
+    SubscribeDto updateSubscriptionStatue(Long id, Long signatoryId, Long eventID, SubscriberStatus status);
 }
