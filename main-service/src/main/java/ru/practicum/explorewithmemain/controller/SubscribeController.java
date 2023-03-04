@@ -3,6 +3,7 @@ package ru.practicum.explorewithmemain.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.explorewithmemain.dto.EventFullDto;
 import ru.practicum.explorewithmemain.dto.SubscribeDto;
 import ru.practicum.explorewithmemain.helper.LogHelper;
 import ru.practicum.explorewithmemain.helper.SubscriberStatus;
@@ -10,6 +11,7 @@ import ru.practicum.explorewithmemain.helper.SubscriptionHelper;
 import ru.practicum.explorewithmemain.service.interfaces.SubscriberService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,6 +19,24 @@ import java.util.Map;
 @RequestMapping(value = "/subscribers")
 public class SubscribeController {
     private final SubscriberService subscriberService;
+
+    @GetMapping(value = "/subscriber/{subscriberId}/get")
+    public List<SubscribeDto> getAllBySubscriberId(@PathVariable Long subscriberId, HttpServletRequest request) {
+        LogHelper.dump(Map.of("subscriberId", subscriberId), request);
+        return subscriberService.getAllBySubscriber(subscriberId);
+    }
+
+    @GetMapping(value = "/signatory/{signatoryId}/get")
+    public List<SubscribeDto> getAllBySignatoryId(@PathVariable Long signatoryId, HttpServletRequest request) {
+        LogHelper.dump(Map.of("signatoryId", signatoryId), request);
+        return subscriberService.getAllBySignatory(signatoryId);
+    }
+
+    @GetMapping(value = "/subscriber/{subscriberId}/events/get")
+    public List<EventFullDto> getSubscriberEvents(@PathVariable Long subscriberId, HttpServletRequest request) {
+        LogHelper.dump(Map.of("subscriberId", subscriberId), request);
+        return subscriberService.getSubscriberEvents(subscriberId);
+    }
 
     @GetMapping(value = "/get/{id}")
     public SubscribeDto findSubscriptionById(@PathVariable Long id, HttpServletRequest request) {

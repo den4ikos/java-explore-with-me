@@ -5,23 +5,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithmemain.Constants;
+import ru.practicum.explorewithmemain.dto.EventFullDto;
 import ru.practicum.explorewithmemain.dto.SubscribeDto;
 import ru.practicum.explorewithmemain.entity.Event;
 import ru.practicum.explorewithmemain.entity.Subscriber;
 import ru.practicum.explorewithmemain.entity.User;
 import ru.practicum.explorewithmemain.exception.ConflictException;
 import ru.practicum.explorewithmemain.exception.NotFoundException;
-import ru.practicum.explorewithmemain.helper.State;
 import ru.practicum.explorewithmemain.helper.SubscriberStatus;
 import ru.practicum.explorewithmemain.helper.SubscriptionHelper;
+import ru.practicum.explorewithmemain.mapper.EventMapper;
 import ru.practicum.explorewithmemain.mapper.SubscriberMapper;
 import ru.practicum.explorewithmemain.repository.EventRepository;
 import ru.practicum.explorewithmemain.repository.SubscribeRepository;
 import ru.practicum.explorewithmemain.repository.UserRepository;
 import ru.practicum.explorewithmemain.service.interfaces.SubscriberService;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,6 +33,7 @@ public class SubscriberServiceImpl implements SubscriberService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final SubscribeRepository subscribeRepository;
+    private final EventMapper eventMapper;
 
     @Override
     @Transactional
@@ -167,5 +170,52 @@ public class SubscriberServiceImpl implements SubscriberService {
         Subscriber updatedSubscription = subscribeRepository.save(subscription);
 
         return SubscriberMapper.toDto(updatedSubscription);
+    }
+
+    @Override
+    @Transactional
+    public List<SubscribeDto> getAllBySubscriber(Long subscriberId) {
+        User subscriber = userRepository
+                .findById(subscriberId)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Subscriber with id " + subscriberId)));
+
+        List<Subscriber> subscribers = subscribeRepository.findAllBySubscriberIdAndStatus(subscriber, SubscriberStatus.CONFIRMED);
+
+        return subscribers
+                .stream()
+                .map(SubscriberMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<SubscribeDto> getAllBySignatory(Long signatoryId) {
+        User signatory = userRepository
+                .findById(signatoryId)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Signatory with id " + signatoryId)));
+
+        List<Subscriber> signatories = subscribeRepository.findAllBySignatoryAndStatus(signatory, SubscriberStatus.CONFIRMED);
+
+        return signatories
+                .stream()
+                .map(SubscriberMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<EventFullDto> getSubscriberEvents(Long subscriberId) {
+        User subscriber = userRepository
+                .findById(subscriberId)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Subscriber with id " + subscriberId)));
+
+        Set<Long> eventIds = subscribeRepository.findSubscriberEventIds(subscriber);
+
+        List<Event> events = eventRepository.findAllByIdIn(eventIds);
+
+        return events
+                .stream()
+                .map(eventMapper::toFullDto)
+                .collect(Collectors.toList());
     }
 }
