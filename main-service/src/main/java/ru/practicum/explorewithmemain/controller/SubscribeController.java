@@ -2,6 +2,7 @@ package ru.practicum.explorewithmemain.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.explorewithmemain.dto.EventFullDto;
 import ru.practicum.explorewithmemain.dto.SubscribeDto;
@@ -99,5 +100,17 @@ public class SubscribeController {
     public SubscribeDto rejectSubscription(@PathVariable(name = "id") Long subscriptionId, @PathVariable Long subscriberId, HttpServletRequest request) {
         LogHelper.dump(Map.of("subscriberId", subscriptionId), request);
         return subscriberService.rejectSubscription(subscriptionId, subscriberId);
+    }
+
+    @DeleteMapping(value = "/{subscriptionId}/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody Map<String, String> deleteSubscription(@PathVariable Long subscriptionId, HttpServletRequest request) {
+        LogHelper.dump(Map.of("subscriptionId", subscriptionId), request);
+        return subscriberService.deleteSubscription(subscriptionId);
+    }
+
+    @DeleteMapping(value = "/subscriber/{subscriberId}/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody Map<String, String> deleteAllBySubscriber(@PathVariable Long subscriberId, HttpServletRequest request) {
+        LogHelper.dump(Map.of("subscriberId", subscriberId), request);
+        return subscriberService.deleteAllBySubscriber(subscriberId);
     }
 }

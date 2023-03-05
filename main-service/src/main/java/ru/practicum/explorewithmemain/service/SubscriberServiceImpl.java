@@ -215,4 +215,35 @@ public class SubscriberServiceImpl implements SubscriberService {
                 .map(eventMapper::toFullDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional
+    public Map<String, String> deleteSubscription(Long subscriptionId) {
+        Subscriber subscriber = subscribeRepository
+                .findById(subscriptionId)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Subscription with id " + subscriptionId)));
+
+        if (subscriber.getStatus().equals(SubscriberStatus.PENDING)) {
+            throw new ConflictException(Constants.removeSubscriptionError);
+        }
+
+        subscribeRepository.delete(subscriber);
+
+        return Map.of("status", "success", "message", Constants.removeSubscription);
+    }
+
+    @Override
+    @Transactional
+    public Map<String, String> deleteAllBySubscriber(Long subscriberId) {
+        User subscriber = userRepository
+                .findById(subscriberId)
+                .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Subscriber with id " + subscriberId)));
+
+        List<Subscriber> subscribers = subscribeRepository
+                .findAllBySubscriberAndStatusIn(subscriber, Arrays.asList(SubscriberStatus.CONFIRMED, SubscriberStatus.REJECTED));
+
+        subscribeRepository.deleteAll(subscribers);
+
+        return Map.of("status", "success", "message", Constants.removeAllSubscription);
+    }
 }

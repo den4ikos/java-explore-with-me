@@ -25,4 +25,6 @@ public interface SubscribeRepository extends JpaRepository<Subscriber, Long> {
     Set<Event> findSubscriberEventIds(@Param("subscriber") User subscriber);
 
     List<Subscriber> findAllBySubscriberAndStatus(User subscriber, SubscriberStatus status);
+
+    List<Subscriber> findAllBySubscriberAndStatusIn(User subscriber, List<SubscriberStatus> statuses);
 }

@@ -5,6 +5,7 @@ import ru.practicum.explorewithmemain.dto.SubscribeDto;
 import ru.practicum.explorewithmemain.helper.SubscriberStatus;
 
 import java.util.List;
+import java.util.Map;
 
 public interface SubscriberService {
     SubscribeDto getSubscribeById(Long id);
@@ -26,4 +27,8 @@ public interface SubscriberService {
     List<SubscribeDto> getAllBySignatory(Long signatoryId);
 
     List<EventFullDto> getSubscriberEvents(Long subscriberId);
+
+    Map<String, String> deleteSubscription(Long subscriptionId);
+
+    Map<String, String> deleteAllBySubscriber(Long subscriberId);
 }
