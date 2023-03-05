@@ -21,8 +21,7 @@ import ru.practicum.explorewithmemain.repository.SubscribeRepository;
 import ru.practicum.explorewithmemain.repository.UserRepository;
 import ru.practicum.explorewithmemain.service.interfaces.SubscriberService;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -179,7 +178,7 @@ public class SubscriberServiceImpl implements SubscriberService {
                 .findById(subscriberId)
                 .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Subscriber with id " + subscriberId)));
 
-        List<Subscriber> subscribers = subscribeRepository.findAllBySubscriberIdAndStatus(subscriber, SubscriberStatus.CONFIRMED);
+        List<Subscriber> subscribers = subscribeRepository.findAllBySubscriberAndStatus(subscriber, SubscriberStatus.CONFIRMED);
 
         return subscribers
                 .stream()
@@ -209,9 +208,7 @@ public class SubscriberServiceImpl implements SubscriberService {
                 .findById(subscriberId)
                 .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Subscriber with id " + subscriberId)));
 
-        Set<Long> eventIds = subscribeRepository.findSubscriberEventIds(subscriber);
-
-        List<Event> events = eventRepository.findAllByIdIn(eventIds);
+        Set<Event> events = subscribeRepository.findSubscriberEventIds(subscriber);
 
         return events
                 .stream()

@@ -19,11 +19,10 @@ public interface SubscribeRepository extends JpaRepository<Subscriber, Long> {
 
     Subscriber findByEvent(Event event);
 
-    @Query(value = "select s from Subscriber s where s.subscriber = :subscriber and s.status = :status")
-    List<Subscriber> findAllBySubscriberIdAndStatus(@Param("subscriber") User subscriber, @Param("status") SubscriberStatus status);
+    List<Subscriber> findAllBySignatoryAndStatus(User signatory, SubscriberStatus status);
 
-    List<Subscriber> findAllBySignatoryAndStatus(User signatory, SubscriberStatus confirmed);
+    @Query(value = "select s.event from Subscriber s where s.subscriber = :subscriber and s.status = 'CONFIRMED'")
+    Set<Event> findSubscriberEventIds(@Param("subscriber") User subscriber);
 
-    @Query(value = "select s.event from Subscriber s where s.subscriber = :subscriber")
-    Set<Long> findSubscriberEventIds(@Param("subscriber") User subscriber);
+    List<Subscriber> findAllBySubscriberAndStatus(User subscriber, SubscriberStatus status);
 }

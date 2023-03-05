@@ -26,6 +26,7 @@ public class Subscriber {
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
+    @Enumerated(EnumType.STRING)
     private SubscriberStatus status;
     private LocalDateTime created;
 }

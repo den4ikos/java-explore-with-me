@@ -15,7 +15,7 @@ public class SubscriptionHelper {
     public static SubscriberStatus convertFromString(String status) {
         String stringStatusToUpper = status == null ? "CONFIRMED" : status.toUpperCase(Locale.ROOT);
 
-        if (!containsEnumStatus(status)) {
+        if (!containsEnumStatus(stringStatusToUpper)) {
             throw new BadRequestException("Set correct status! Must be confirmed or rejected.");
         }
 
