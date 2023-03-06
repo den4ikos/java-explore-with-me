@@ -8,7 +8,6 @@ import ru.practicum.explorewithmemain.dto.EventFullDto;
 import ru.practicum.explorewithmemain.dto.SubscribeDto;
 import ru.practicum.explorewithmemain.helper.LogHelper;
 import ru.practicum.explorewithmemain.helper.SubscriberStatus;
-import ru.practicum.explorewithmemain.helper.SubscriptionHelper;
 import ru.practicum.explorewithmemain.service.interfaces.SubscriberService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,19 +39,19 @@ public class SubscribeController {
     }
 
     @GetMapping(value = "/get/{id}")
-    public SubscribeDto findSubscriptionById(@PathVariable Long id, HttpServletRequest request) {
+    public SubscribeDto getSubscriptionById(@PathVariable Long id, HttpServletRequest request) {
         LogHelper.dump(Map.of("id", id), request);
         return subscriberService.getSubscribeById(id);
     }
 
     @GetMapping(value = "/event-owner/{signatoryId}")
-    public SubscribeDto findSubscriptionBySignatoryId(@PathVariable Long signatoryId, HttpServletRequest request) {
+    public SubscribeDto getSubscriptionByEventOwnerId(@PathVariable Long signatoryId, HttpServletRequest request) {
         LogHelper.dump(Map.of("signatoryId", signatoryId), request);
-        return subscriberService.getSubscribeBySignatoryId(signatoryId);
+        return subscriberService.getSubscribeByEventOwnerId(signatoryId);
     }
 
     @GetMapping(value = "/event/{eventId}")
-    public SubscribeDto findSubscriptionByEventId(@PathVariable Long eventId, HttpServletRequest request) {
+    public SubscribeDto getSubscriptionByEventId(@PathVariable Long eventId, HttpServletRequest request) {
         LogHelper.dump(Map.of("eventId", eventId), request);
         return subscriberService.getSubscribeByEventId(eventId);
     }

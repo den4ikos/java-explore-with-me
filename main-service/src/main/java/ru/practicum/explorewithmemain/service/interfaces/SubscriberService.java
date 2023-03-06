@@ -14,7 +14,7 @@ public interface SubscriberService {
 
     SubscribeDto sendRequest(Long userId, Long signatoryId, Long eventId);
 
-    SubscribeDto getSubscribeBySignatoryId(Long signatoryId);
+    SubscribeDto getSubscribeByEventOwnerId(Long signatoryId);
 
     SubscribeDto getSubscribeByEventId(Long eventId);
 

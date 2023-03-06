@@ -63,7 +63,7 @@ public class SubscriberServiceImpl implements SubscriberService {
 
     @Override
     @Transactional
-    public SubscribeDto getSubscribeBySignatoryId(Long signatoryId) {
+    public SubscribeDto getSubscribeByEventOwnerId(Long signatoryId) {
         User eventOwner = userRepository
                 .findById(signatoryId)
                 .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Signatory with id " + signatoryId)));
