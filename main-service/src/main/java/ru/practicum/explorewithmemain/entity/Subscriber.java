@@ -21,8 +21,8 @@ public class Subscriber {
     @JoinColumn(name = "subscriber_id")
     private User subscriber;
     @ManyToOne
-    @JoinColumn(name = "signatory_id")
-    private User signatory;
+    @JoinColumn(name = "event_owner")
+    private User eventOwner;
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;

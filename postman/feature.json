@@ -104,13 +104,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/subscribers/signatory/:signatoryId",
+							"raw": "{{baseUrl}}/subscribers/event-owner/:signatoryId",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"subscribers",
-								"signatory",
+								"event-owner",
 								":signatoryId"
 							],
 							"variable": [
@@ -614,14 +614,14 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/subscribers/:id/signatory/:signatoryId/event/:eventId/confirm?status=unknown",
+							"raw": "{{baseUrl}}/subscribers/:id/event-owner/:signatoryId/event/:eventId/confirm?status=unknown",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"subscribers",
 								":id",
-								"signatory",
+								"event-owner",
 								":signatoryId",
 								"event",
 								":eventId",
@@ -838,13 +838,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/subscribers/signatory/:signatoryId/get",
+							"raw": "{{baseUrl}}/subscribers/event-owner/:signatoryId/get",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"subscribers",
-								"signatory",
+								"event-owner",
 								":signatoryId",
 								"get"
 							],
@@ -1062,14 +1062,14 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/subscribers/:id/signatory/:signatoryId/event/:eventId/confirm",
+							"raw": "{{baseUrl}}/subscribers/:id/event-owner/:signatoryId/event/:eventId/confirm",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"subscribers",
 								":id",
-								"signatory",
+								"event-owner",
 								":signatoryId",
 								"event",
 								":eventId",
@@ -1172,14 +1172,14 @@
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/subscribers/:id/signatory/:signatoryId/event/:eventId/confirm?status=rejected",
+							"raw": "{{baseUrl}}/subscribers/:id/event-owner/:signatoryId/event/:eventId/confirm?status=rejected",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"subscribers",
 								":id",
-								"signatory",
+								"event-owner",
 								":signatoryId",
 								"event",
 								":eventId",
@@ -1766,7 +1766,7 @@
 					"    }",
 					"",
 					"    async confirmSubscription(subscriptionId, signatoryId, eventId, verbose=null) {",
-					"        return this.patch('/subscribers/' + subscriptionId + '/signatory/'+ signatoryId +'/event/' + eventId + '/confirm?status=confirmed', null, \"Ошибка при подтверждении статуса подписки\", verbose);",
+					"        return this.patch('/subscribers/' + subscriptionId + '/event-owner/'+ signatoryId +'/event/' + eventId + '/confirm?status=confirmed', null, \"Ошибка при подтверждении статуса подписки\", verbose);",
 					"    }",
 					"",
 					"    async post(path, body, errorText = \"Ошибка при выполнении post-запроса: \", verbose=null) {",

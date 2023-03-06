@@ -15,11 +15,11 @@ import java.util.Set;
 public interface SubscribeRepository extends JpaRepository<Subscriber, Long> {
     Subscriber findBySubscriber(User subscriber);
 
-    Subscriber findBySignatory(User signatory);
+    Subscriber findByEventOwner(User eventOwner);
 
     Subscriber findByEvent(Event event);
 
-    List<Subscriber> findAllBySignatoryAndStatus(User signatory, SubscriberStatus status);
+    List<Subscriber> findAllByEventOwnerAndStatus(User eventOwner, SubscriberStatus status);
 
     @Query(value = "select s.event from Subscriber s where s.subscriber = :subscriber and s.status = 'CONFIRMED'")
     Set<Event> findSubscriberEventIds(@Param("subscriber") User subscriber);

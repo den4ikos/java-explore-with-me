@@ -24,7 +24,7 @@ public class SubscriberMapper {
         Subscriber subscriber = new Subscriber();
         subscriber.setId(subscribeDto.getId());
         subscriber.setSubscriber(subscribeDto.getSubscriber());
-        subscriber.setSignatory(subscribeDto.getSignatory());
+        subscriber.setEventOwner(subscribeDto.getSignatory());
         subscriber.setEvent(subscribeDto.getEvent());
         subscriber.setStatus(subscribeDto.getStatus());
         subscriber.setCreated(LocalDateTime.now());
@@ -37,7 +37,7 @@ public class SubscriberMapper {
                 .builder()
                 .id(subscriber.getId())
                 .subscriber(subscriber.getSubscriber())
-                .signatory(subscriber.getSignatory())
+                .signatory(subscriber.getEventOwner())
                 .event(subscriber.getEvent())
                 .status(subscriber.getStatus())
                 .build();

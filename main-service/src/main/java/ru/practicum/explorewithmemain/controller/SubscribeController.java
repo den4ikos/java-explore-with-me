@@ -27,7 +27,7 @@ public class SubscribeController {
         return subscriberService.getAllBySubscriber(subscriberId);
     }
 
-    @GetMapping(value = "/signatory/{signatoryId}/get")
+    @GetMapping(value = "/event-owner/{signatoryId}/get")
     public List<SubscribeDto> getAllBySignatoryId(@PathVariable Long signatoryId, HttpServletRequest request) {
         LogHelper.dump(Map.of("signatoryId", signatoryId), request);
         return subscriberService.getAllBySignatory(signatoryId);
@@ -45,7 +45,7 @@ public class SubscribeController {
         return subscriberService.getSubscribeById(id);
     }
 
-    @GetMapping(value = "/signatory/{signatoryId}")
+    @GetMapping(value = "/event-owner/{signatoryId}")
     public SubscribeDto findSubscriptionBySignatoryId(@PathVariable Long signatoryId, HttpServletRequest request) {
         LogHelper.dump(Map.of("signatoryId", signatoryId), request);
         return subscriberService.getSubscribeBySignatoryId(signatoryId);
@@ -78,7 +78,7 @@ public class SubscribeController {
         return subscriberService.sendRequest(subscriberId, signatoryId, eventId);
     }
 
-    @PatchMapping(value = "/{id}/signatory/{signatoryId}/event/{eventId}/confirm")
+    @PatchMapping(value = "/{id}/event-owner/{signatoryId}/event/{eventId}/confirm")
     public SubscribeDto confirmSubscription(
             @PathVariable Long id,
             @PathVariable Long signatoryId,

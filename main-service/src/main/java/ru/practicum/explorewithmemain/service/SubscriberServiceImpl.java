@@ -64,11 +64,11 @@ public class SubscriberServiceImpl implements SubscriberService {
     @Override
     @Transactional
     public SubscribeDto getSubscribeBySignatoryId(Long signatoryId) {
-        User signatory = userRepository
+        User eventOwner = userRepository
                 .findById(signatoryId)
                 .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Signatory with id " + signatoryId)));
 
-        Subscriber subscriber = subscribeRepository.findBySignatory(signatory);
+        Subscriber subscriber = subscribeRepository.findByEventOwner(eventOwner);
 
         if (null == subscriber) {
             throw new NotFoundException(String.format(Constants.notFoundError, "Subscription"));
@@ -126,7 +126,7 @@ public class SubscriberServiceImpl implements SubscriberService {
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Subscription with id " + id)));
 
-        if (!subscription.getSignatory().getId().equals(signatoryId)) {
+        if (!subscription.getEventOwner().getId().equals(signatoryId)) {
             throw new ConflictException(Constants.accessibleConflict);
         }
 
@@ -189,11 +189,11 @@ public class SubscriberServiceImpl implements SubscriberService {
     @Override
     @Transactional
     public List<SubscribeDto> getAllBySignatory(Long signatoryId) {
-        User signatory = userRepository
+        User eventOwner = userRepository
                 .findById(signatoryId)
                 .orElseThrow(() -> new NotFoundException(String.format(Constants.notFoundError, "Signatory with id " + signatoryId)));
 
-        List<Subscriber> signatories = subscribeRepository.findAllBySignatoryAndStatus(signatory, SubscriberStatus.CONFIRMED);
+        List<Subscriber> signatories = subscribeRepository.findAllByEventOwnerAndStatus(eventOwner, SubscriberStatus.CONFIRMED);
 
         return signatories
                 .stream()
