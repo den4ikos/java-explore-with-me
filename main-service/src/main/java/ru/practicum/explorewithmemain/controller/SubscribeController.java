@@ -85,7 +85,7 @@ public class SubscribeController {
             @PathVariable Long eventId,
             @RequestParam(required = false) String status,
             HttpServletRequest request) {
-        SubscriberStatus statusForUpdate = SubscriptionHelper.convertFromString(status);
+        SubscriberStatus statusForUpdate = SubscriberStatus.convertFromString(status);
 
         LogHelper.dump(Map.of(
                 "id", id,
