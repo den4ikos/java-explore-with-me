@@ -1,0 +1,1998 @@
+{
+	"info": {
+		"_postman_id": "ab5ab2ca-1345-442b-84ae-1fd51e1a0ae0",
+		"name": "Tests For Subscriptions (Explore With Me)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26053496"
+	},
+	"item": [
+		{
+			"name": "404 Not found",
+			"item": [
+				{
+					"name": "Get By Id and return 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/get/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								"get",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "-1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subscription by Subscriber ID and return 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/:subscriberId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								":subscriberId"
+							],
+							"variable": [
+								{
+									"key": "subscriberId",
+									"value": "-1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By Signatory ID and return 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/event-owner/:signatoryId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								"event-owner",
+								":signatoryId"
+							],
+							"variable": [
+								{
+									"key": "signatoryId",
+									"value": "-1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Subscription for non-exists subscription",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    try {",
+									"        const user = await api.addUser(rnd.getUser());",
+									"        pm.collectionVariables.set(\"id\", -1)",
+									"        pm.collectionVariables.set(\"subscriberId\", user.id)",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        let event = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event = await api.publishEvent(event.id);",
+									"",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/:id/:subscriberId/reject",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								":id",
+								":subscriberId",
+								"reject"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{id}}"
+								},
+								{
+									"key": "subscriberId",
+									"value": "{{subscriberId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Try to delete subscription from unknown sibscriber",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    try {",
+									"        const subscriber = await api.addUser(rnd.getUser());",
+									"        pm.collectionVariables.set(\"subscriberId\", -1);",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        let event1 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event1 = await api.publishEvent(event1.id);",
+									"        let event2 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event2 = await api.publishEvent(event2.id);",
+									"        let event3 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event3 = await api.publishEvent(event3.id);",
+									"        const subscription1 = await api.addSubscription(subscriber.id, signatory.id, event1.id);",
+									"        const subscription2 = await api.addSubscription(subscriber.id, signatory.id, event2.id);",
+									"        const subscription3 = await api.addSubscription(subscriber.id, signatory.id, event3.id);",
+									"        await api.confirmSubscription(subscription1.id, signatory.id, event1.id);",
+									"        await api.confirmSubscription(subscription2.id, signatory.id, event2.id);",
+									"        await api.confirmSubscription(subscription3.id, signatory.id, event3.id);",
+									"    ",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/subscriber/:subscriberId/delete",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								"subscriber",
+								":subscriberId",
+								"delete"
+							],
+							"variable": [
+								{
+									"key": "subscriberId",
+									"value": "{{subscriberId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "419 conflicts",
+			"item": [
+				{
+					"name": "Try to subscribe to an unpublished event",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    try {",
+									"        const user = await api.addUser(rnd.getUser());",
+									"        pm.collectionVariables.set(\"subscriberId\", user.id)",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        pm.collectionVariables.set(\"signatoryId\", signatory.id);",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        const event = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        pm.collectionVariables.set(\"eventId\", event.id);",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 409\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/:subscriberId/request/:signatoryId/event/:eventId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								":subscriberId",
+								"request",
+								":signatoryId",
+								"event",
+								":eventId"
+							],
+							"variable": [
+								{
+									"key": "subscriberId",
+									"value": "{{subscriberId}}"
+								},
+								{
+									"key": "signatoryId",
+									"value": "{{signatoryId}}"
+								},
+								{
+									"key": "eventId",
+									"value": "{{eventId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Subscription from Unknown subscriber",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    try {",
+									"        const user = await api.addUser(rnd.getUser());",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        let event = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event = await api.publishEvent(event.id);",
+									"        const subscription = await api.addSubscription(user.id, signatory.id, event.id);",
+									"        pm.collectionVariables.set(\"id\", subscription.id);",
+									"        pm.collectionVariables.set(\"subscriberId\", -1);",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 409\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/:id/:subscriberId/reject",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								":id",
+								":subscriberId",
+								"reject"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{id}}"
+								},
+								{
+									"key": "subscriberId",
+									"value": "{{subscriberId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Try to delete subscription with unconfirmed status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 409\", function () {",
+									"    pm.response.to.have.status(409);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    try {",
+									"        const subscriber = await api.addUser(rnd.getUser());",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        let event1 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event1 = await api.publishEvent(event1.id);",
+									"        const subscription1 = await api.addSubscription(subscriber.id, signatory.id, event1.id);",
+									"        pm.collectionVariables.set(\"subscriptionId\", subscription1.id);",
+									"    ",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/:subscriptionId/delete",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								":subscriptionId",
+								"delete"
+							],
+							"variable": [
+								{
+									"key": "subscriptionId",
+									"value": "{{subscriptionId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "400 Bad Request",
+			"item": [
+				{
+					"name": "Try to update status and return 400",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    try {",
+									"        const user = await api.addUser(rnd.getUser());",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        pm.collectionVariables.set(\"signatoryId\", signatory.id)",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        let event = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event = await api.publishEvent(event.id);",
+									"        pm.collectionVariables.set(\"eventId\", event.id);",
+									"        const subscription = await api.addSubscription(user.id, signatory.id, event.id);",
+									"        pm.collectionVariables.set(\"id\", subscription.id)",
+									"",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/:id/event-owner/:signatoryId/event/:eventId/confirm?status=unknown",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								":id",
+								"event-owner",
+								":signatoryId",
+								"event",
+								":eventId",
+								"confirm"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "unknown"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{id}}"
+								},
+								{
+									"key": "signatoryId",
+									"value": "{{signatoryId}}"
+								},
+								{
+									"key": "eventId",
+									"value": "{{eventId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Success",
+			"item": [
+				{
+					"name": "Get All subscribers by Subscriber",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    try {",
+									"        const subscriber = await api.addUser(rnd.getUser());",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        let event1 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event1 = await api.publishEvent(event1.id);",
+									"        let event2 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event2 = await api.publishEvent(event2.id);",
+									"        let event3 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event3 = await api.publishEvent(event3.id);",
+									"        const subscription1 = await api.addSubscription(subscriber.id, signatory.id, event1.id);",
+									"        const subscription2 = await api.addSubscription(subscriber.id, signatory.id, event2.id);",
+									"        const subscription3 = await api.addSubscription(subscriber.id, signatory.id, event3.id);",
+									"        await api.confirmSubscription(subscription1.id, signatory.id, event1.id);",
+									"        await api.confirmSubscription(subscription2.id, signatory.id, event2.id);",
+									"        await api.confirmSubscription(subscription3.id, signatory.id, event3.id);",
+									"        pm.collectionVariables.set(\"subscriberId\", subscriber.id)",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const results = pm.response.json();",
+									"",
+									"pm.test(\"Ответ должен содержать массив из 3(трёх) элементов\", function () {",
+									"    pm.expect(results).to.length(3)",
+									"});",
+									"",
+									"pm.test(\"У всех подписок должен быть статус CONFIRMED\", function () {",
+									"    results.map(r => {",
+									"        pm.expect(r.status).equal(\"CONFIRMED\");",
+									"    })",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/subscriber/:subscriberId/get",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								"subscriber",
+								":subscriberId",
+								"get"
+							],
+							"variable": [
+								{
+									"key": "subscriberId",
+									"value": "{{subscriberId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all subscribers by Signatory",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    try {",
+									"        const subscriber = await api.addUser(rnd.getUser());",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        let event1 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event1 = await api.publishEvent(event1.id);",
+									"        let event2 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event2 = await api.publishEvent(event2.id);",
+									"        let event3 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event3 = await api.publishEvent(event3.id);",
+									"        const subscription1 = await api.addSubscription(subscriber.id, signatory.id, event1.id);",
+									"        const subscription2 = await api.addSubscription(subscriber.id, signatory.id, event2.id);",
+									"        const subscription3 = await api.addSubscription(subscriber.id, signatory.id, event3.id);",
+									"        await api.confirmSubscription(subscription1.id, signatory.id, event1.id);",
+									"        await api.confirmSubscription(subscription2.id, signatory.id, event2.id);",
+									"        await api.confirmSubscription(subscription3.id, signatory.id, event3.id);",
+									"        pm.collectionVariables.set(\"signatoryId\", signatory.id)",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const results = pm.response.json();",
+									"",
+									"pm.test(\"Ответ должен содержать массив из 3(трёх) элементов\", function () {",
+									"    pm.expect(results).to.length(3)",
+									"});",
+									"",
+									"pm.test(\"У всех подписок должен быть статус CONFIRMED\", function () {",
+									"    results.map(r => {",
+									"        pm.expect(r.status).equal(\"CONFIRMED\");",
+									"    })",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/event-owner/:signatoryId/get",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								"event-owner",
+								":signatoryId",
+								"get"
+							],
+							"variable": [
+								{
+									"key": "signatoryId",
+									"value": "{{signatoryId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all Subscriber's events",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    try {",
+									"        const subscriber = await api.addUser(rnd.getUser());",
+									"        pm.collectionVariables.set(\"subscriberId\", subscriber.id)",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        let event1 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event1 = await api.publishEvent(event1.id);",
+									"        let event2 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event2 = await api.publishEvent(event2.id);",
+									"        let event3 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event3 = await api.publishEvent(event3.id);",
+									"        let event4 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event4 = await api.publishEvent(event4.id);",
+									"        const subscription1 = await api.addSubscription(subscriber.id, signatory.id, event1.id);",
+									"        const subscription2 = await api.addSubscription(subscriber.id, signatory.id, event2.id);",
+									"        const subscription3 = await api.addSubscription(subscriber.id, signatory.id, event3.id);",
+									"        const subscription4 = await api.addSubscription(subscriber.id, signatory.id, event4.id);",
+									"        await api.confirmSubscription(subscription1.id, signatory.id, event1.id);",
+									"        await api.confirmSubscription(subscription2.id, signatory.id, event2.id);",
+									"        await api.confirmSubscription(subscription3.id, signatory.id, event3.id);",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const results = pm.response.json();",
+									"",
+									"pm.test(\"Ответ должен содержать массив из 3(трёх) элементов\", function () {",
+									"    pm.expect(results).to.length(3)",
+									"});",
+									"",
+									"pm.test(\"События должны содержать поля: id, annotation, confirmedRequests, createdOn, description, eventDate, initiator, location, paid, publishedOn, requestModeration, state, title, views, participantLimit, category\", function () {",
+									"    results.map(r => {",
+									"        pm.expect(r).to.have.property(\"id\");",
+									"        pm.expect(r).to.have.property(\"annotation\");",
+									"        pm.expect(r).to.have.property(\"confirmedRequests\");",
+									"        pm.expect(r).to.have.property(\"createdOn\");",
+									"        pm.expect(r).to.have.property(\"description\");",
+									"        pm.expect(r).to.have.property(\"eventDate\");",
+									"        pm.expect(r).to.have.property(\"initiator\");",
+									"        pm.expect(r).to.have.property(\"location\");",
+									"        pm.expect(r).to.have.property(\"paid\");",
+									"        pm.expect(r).to.have.property(\"publishedOn\");",
+									"        pm.expect(r).to.have.property(\"requestModeration\");",
+									"        pm.expect(r).to.have.property(\"state\");",
+									"        pm.expect(r).to.have.property(\"title\");",
+									"        pm.expect(r).to.have.property(\"views\");",
+									"        pm.expect(r).to.have.property(\"participantLimit\");",
+									"        pm.expect(r).to.have.property(\"category\");",
+									"    })",
+									"});",
+									"",
+									"pm.test(\"Все события должны иметь подтвержденный статус\", function () {",
+									"    results.map(r => {",
+									"        pm.expect(r.state).equal(\"PUBLISH_EVENT\");",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/subscriber/:subscriberId/events/get",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								"subscriber",
+								":subscriberId",
+								"events",
+								"get"
+							],
+							"variable": [
+								{
+									"key": "subscriberId",
+									"value": "{{subscriberId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm subscription from Signatory",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    let subscriber;",
+									"    try {",
+									"        const user = await api.addUser(rnd.getUser());",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        pm.collectionVariables.set(\"signatoryId\", signatory.id)",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        let event = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event = await api.publishEvent(event.id);",
+									"        pm.collectionVariables.set(\"eventId\", event.id);",
+									"        const subscription = await api.addSubscription(user.id, signatory.id, event.id);",
+									"        pm.collectionVariables.set(\"id\", subscription.id);",
+									"        subscriber = await api.findSubscription(subscription.id);",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const subscription = pm.response.json();",
+									"",
+									"pm.test(\"Подписка должна содержать поля: id, subscriber, signatory, event, status\", function () {",
+									"    pm.expect(subscription).to.have.property('id');",
+									"    pm.expect(subscription).to.have.property('subscriber');",
+									"    pm.expect(subscription).to.have.property('signatory');",
+									"    pm.expect(subscription).to.have.property('event');",
+									"    pm.expect(subscription).to.have.property('status');",
+									"});",
+									"",
+									"pm.test(\"Статус должен быть подтвержден\", function () {",
+									"    pm.expect(subscription.status).equal(\"CONFIRMED\", 'Статус должен быть подтвержден');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/:id/event-owner/:signatoryId/event/:eventId/confirm",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								":id",
+								"event-owner",
+								":signatoryId",
+								"event",
+								":eventId",
+								"confirm"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{id}}"
+								},
+								{
+									"key": "signatoryId",
+									"value": "{{signatoryId}}"
+								},
+								{
+									"key": "eventId",
+									"value": "{{eventId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Subscription from Signatory",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    let subscriber;",
+									"    try {",
+									"        const user = await api.addUser(rnd.getUser());",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        let event = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event = await api.publishEvent(event.id);",
+									"        const subscription = await api.addSubscription(user.id, signatory.id, event.id);",
+									"        pm.collectionVariables.set(\"id\", subscription.id)",
+									"        pm.collectionVariables.set(\"signatoryId\", signatory.id)",
+									"        pm.collectionVariables.set(\"eventId\", event.id);",
+									"        subscriber = await api.findSubscription(subscription.id);",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const subscription = pm.response.json();",
+									"",
+									"pm.test(\"Подписка должна содержать поля: id, subscriber, signatory, event, status\", function () {",
+									"    pm.expect(subscription).to.have.property('id');",
+									"    pm.expect(subscription).to.have.property('subscriber');",
+									"    pm.expect(subscription).to.have.property('signatory');",
+									"    pm.expect(subscription).to.have.property('event');",
+									"    pm.expect(subscription).to.have.property('status');",
+									"});",
+									"",
+									"pm.test(\"Статус должен быть подтвержден\", function () {",
+									"    pm.expect(subscription.status).equal(\"REJECTED\", 'Статус должен быть подтвержден');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/:id/event-owner/:signatoryId/event/:eventId/confirm?status=rejected",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								":id",
+								"event-owner",
+								":signatoryId",
+								"event",
+								":eventId",
+								"confirm"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "rejected"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{id}}"
+								},
+								{
+									"key": "signatoryId",
+									"value": "{{signatoryId}}"
+								},
+								{
+									"key": "eventId",
+									"value": "{{eventId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Subscription from Subscriber",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    let subscriber;",
+									"    try {",
+									"        const user = await api.addUser(rnd.getUser());",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        let event = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event = await api.publishEvent(event.id);",
+									"        const subscription = await api.addSubscription(user.id, signatory.id, event.id);",
+									"        pm.collectionVariables.set(\"id\", subscription.id)",
+									"        pm.collectionVariables.set(\"subscriberId\", user.id)",
+									"        subscriber = await api.findSubscription(subscription.id);",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const subscription = pm.response.json();",
+									"",
+									"pm.test(\"Подписка должна содержать поля: id, subscriber, signatory, event, status\", function () {",
+									"    pm.expect(subscription).to.have.property('id');",
+									"    pm.expect(subscription).to.have.property('subscriber');",
+									"    pm.expect(subscription).to.have.property('signatory');",
+									"    pm.expect(subscription).to.have.property('event');",
+									"    pm.expect(subscription).to.have.property('status');",
+									"});",
+									"",
+									"pm.test(\"Статус должен быть подтвержден\", function () {",
+									"    pm.expect(subscription.status).equal(\"REJECTED\", 'Статус должен быть подтвержден');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/:id/:subscriberId/reject",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								":id",
+								":subscriberId",
+								"reject"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{id}}"
+								},
+								{
+									"key": "subscriberId",
+									"value": "{{subscriberId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subscriber By ID",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"    ",
+									"    try {",
+									"        const user = await api.addUser(rnd.getUser());",
+									"        pm.collectionVariables.set(\"subscriberId\", user.id)",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        let event = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event = await api.publishEvent(event.id);",
+									"        await api.addSubscription(user.id, signatory.id, event.id);",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(200);  ",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const subscription = pm.response.json();",
+									"",
+									"pm.test(\"Подписка должна содержать поля: id, subscriber, signatory, event, status\", function () {",
+									"    pm.expect(subscription).to.have.property('id');",
+									"    pm.expect(subscription).to.have.property('subscriber');",
+									"    pm.expect(subscription).to.have.property('signatory');",
+									"    pm.expect(subscription).to.have.property('event');",
+									"    pm.expect(subscription).to.have.property('status');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/subscriber/:subscriberId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								"subscriber",
+								":subscriberId"
+							],
+							"variable": [
+								{
+									"key": "subscriberId",
+									"value": "{{subscriberId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscribe",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    let event;",
+									"    try {",
+									"        const user = await api.addUser(rnd.getUser());",
+									"        pm.collectionVariables.set(\"subscriberId\", user.id)",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        pm.collectionVariables.set(\"signatoryId\", signatory.id);",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        event = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event = await api.publishEvent(event.id);",
+									"        pm.collectionVariables.set(\"eventId\", event.id);",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/:subscriberId/request/:signatoryId/event/:eventId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								":subscriberId",
+								"request",
+								":signatoryId",
+								"event",
+								":eventId"
+							],
+							"variable": [
+								{
+									"key": "subscriberId",
+									"value": "{{subscriberId}}"
+								},
+								{
+									"key": "signatoryId",
+									"value": "{{signatoryId}}"
+								},
+								{
+									"key": "eventId",
+									"value": "{{eventId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Subscription by subscription id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    try {",
+									"        const subscriber = await api.addUser(rnd.getUser());",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        let event1 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event1 = await api.publishEvent(event1.id);",
+									"        const subscription1 = await api.addSubscription(subscriber.id, signatory.id, event1.id);",
+									"        pm.collectionVariables.set(\"subscriptionId\", subscription1.id)",
+									"        await api.confirmSubscription(subscription1.id, signatory.id, event1.id);",
+									"    ",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const answer = pm.response.json();",
+									"",
+									"pm.test(\"Ответ должен содержать поля status и message\", function () {",
+									"    pm.expect(answer).to.have.property(\"status\");",
+									"    pm.expect(answer).to.have.property(\"message\");",
+									"});",
+									"",
+									"pm.test(\"Поле status должно быть success\", function () {",
+									"    pm.expect(answer.status).equal(\"success\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/:subscriptionId/delete",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								":subscriptionId",
+								"delete"
+							],
+							"variable": [
+								{
+									"key": "subscriptionId",
+									"value": "{{subscriptionId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete all subscriptions by subscriber",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {",
+									"    const api = new API(pm);",
+									"    const rnd = new RandomUtils();",
+									"",
+									"    try {",
+									"        const subscriber = await api.addUser(rnd.getUser());",
+									"        pm.collectionVariables.set(\"subscriberId\", subscriber.id);",
+									"        const signatory = await api.addUser(rnd.getUser());",
+									"        const category = await api.addCategory(rnd.getCategory());",
+									"        let event1 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event1 = await api.publishEvent(event1.id);",
+									"        let event2 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event2 = await api.publishEvent(event2.id);",
+									"        let event3 = await api.addEvent(signatory.id, rnd.getEvent(category.id));",
+									"        event3 = await api.publishEvent(event3.id);",
+									"        const subscription1 = await api.addSubscription(subscriber.id, signatory.id, event1.id);",
+									"        const subscription2 = await api.addSubscription(subscriber.id, signatory.id, event2.id);",
+									"        const subscription3 = await api.addSubscription(subscriber.id, signatory.id, event3.id);",
+									"        await api.confirmSubscription(subscription1.id, signatory.id, event1.id);",
+									"        await api.confirmSubscription(subscription2.id, signatory.id, event2.id);",
+									"        await api.confirmSubscription(subscription3.id, signatory.id, event3.id);",
+									"    ",
+									"    } catch(err) {",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);",
+									"    }",
+									"};",
+									"",
+									"const interval = setInterval(() => {}, 1000);",
+									"",
+									"setTimeout(async () => ",
+									"    {",
+									"        try {",
+									"            await main();",
+									"        } catch (e) {",
+									"            console.error(e);",
+									"        } finally {",
+									"            clearInterval(interval);",
+									"        }",
+									"    },  ",
+									"    100 ",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.be.withBody;",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"const answer = pm.response.json();",
+									"",
+									"pm.test(\"Ответ должен содержать поля status и message\", function () {",
+									"    pm.expect(answer).to.have.property(\"status\");",
+									"    pm.expect(answer).to.have.property(\"message\");",
+									"});",
+									"",
+									"pm.test(\"Поле status должно быть success\", function () {",
+									"    pm.expect(answer.status).equal(\"success\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/subscribers/subscriber/:subscriberId/delete",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"subscribers",
+								"subscriber",
+								":subscriberId",
+								"delete"
+							],
+							"variable": [
+								{
+									"key": "subscriberId",
+									"value": "{{subscriberId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"API = class {",
+					"    constructor(postman, verbose = false, baseUrl = \"http://localhost:8080\") {",
+					"        this.baseUrl = baseUrl;",
+					"        this.pm = postman;",
+					"        this._verbose = verbose;",
+					"    }",
+					"",
+					"    async addUser(user, verbose=null) {",
+					"        return this.post(\"/admin/users\", user, \"Ошибка при добавлении нового пользователя: \", verbose);",
+					"    }",
+					"",
+					"    async addCategory(category, verbose=null) {",
+					"        return this.post(\"/admin/categories\", category, \"Ошибка при добавлении новой категории: \", verbose);",
+					"    }",
+					"",
+					"    async addEvent(userId, event, verbose=null) {",
+					"        return this.post(\"/users/\" + userId + \"/events\", event, \"Ошибка при добавлении нового события: \", verbose);",
+					"    }",
+					"",
+					"    async addCompilation(compilation, verbose=null) {",
+					"        return this.post(\"/admin/compilations\", compilation, \"Ошибка при добавлении новой подборки: \", verbose);",
+					"    }",
+					"",
+					"    async publishParticipationRequest(eventId, userId, verbose=null) {",
+					"        return this.post('/users/' + userId + '/requests?eventId=' + eventId, null, \"Ошибка при добавлении нового запроса на участие в событии\", verbose);",
+					"    }",
+					"",
+					"    async publishEvent(eventId, verbose=null) {",
+					"        return this.patch('/admin/events/' + eventId, {stateAction: \"PUBLISH_EVENT\"}, \"Ошибка при публикации события\", verbose);",
+					"    }",
+					"    ",
+					"    async rejectEvent(eventId, verbose=null) {",
+					"        return this.patch('/admin/events/' + eventId, {stateAction: \"REJECT_EVENT\"}, \"Ошибка при отмене события\", verbose);",
+					"    }",
+					"",
+					"    async acceptParticipationRequest(eventId, userId, reqId, verbose=null) {",
+					"        return this.patch('/users/' + userId + '/events/' + eventId + '/requests/', {requestIds:[reqId], status: \"CONFIRMED\"}, \"Ошибка при принятии заявки на участие в событии\", verbose);",
+					"    }",
+					"",
+					"    async findCategory(catId, verbose=null) {",
+					"        return this.get('/categories/' + catId, null, \"Ошибка при поиске категории по id\", verbose);",
+					"    }",
+					"",
+					"    async findCompilation(compId, verbose=null) {",
+					"        return this.get('/compilations/' + compId, null, \"Ошибка при поиске подборки по id\", verbose);",
+					"    }",
+					"",
+					"    async findUser(userId, verbose=null) {",
+					"        return this.get('/admin/users?ids=' + userId, null, \"Ошибка при поиске пользователя по id\", verbose);",
+					"    }",
+					"",
+					"    async findSubscriber(subscriberId, verbose=null) {",
+					"        return this.get('/subscribers/subscriber/' + subscriberId, null, \"Ошибка при поиске подписчика по id\", verbose);",
+					"    }",
+					"",
+					"    async findSubscription(id, verbose=null) {",
+					"        return this.get('/subscribers/get/' + id, null, \"Ошибка при поиске информации о подписке по id\", verbose);",
+					"    }",
+					"",
+					"    async addSubscription(subscriberId, signatoryId, eventId, verbose=null) {",
+					"        return this.post('/subscribers/' + subscriberId + '/request/' + signatoryId + '/event/' + eventId, null, \"Ошибка при поиске подписчика по id\", verbose);",
+					"    }",
+					"",
+					"    async confirmSubscription(subscriptionId, signatoryId, eventId, verbose=null) {",
+					"        return this.patch('/subscribers/' + subscriptionId + '/event-owner/'+ signatoryId +'/event/' + eventId + '/confirm?status=confirmed', null, \"Ошибка при подтверждении статуса подписки\", verbose);",
+					"    }",
+					"",
+					"    async post(path, body, errorText = \"Ошибка при выполнении post-запроса: \", verbose=null) {",
+					"        return this.sendRequest(\"POST\", path, body, errorText, verbose);",
+					"    }",
+					"",
+					"    async patch(path, body = null, errorText = \"Ошибка при выполнении patch-запроса: \", verbose=null) {",
+					"        return this.sendRequest(\"PATCH\", path, body, errorText, verbose);",
+					"    }",
+					"",
+					"    async get(path, body = null, errorText = \"Ошибка при выполнении get-запроса: \", verbose=null) {",
+					"        return this.sendRequest(\"GET\", path, body, errorText, verbose);",
+					"    }",
+					"",
+					"    async sendRequest(method, path, body=null, errorText = \"Ошибка при выполнении запроса: \", verbose=null) {",
+					"        return new Promise((resolve, reject) => {",
+					"            verbose = verbose == null ? this._verbose : verbose;",
+					"",
+					"            const request = {",
+					"                url: this.baseUrl + path,",
+					"                method: method,",
+					"                body: body == null ? \"\" : JSON.stringify(body),",
+					"                header: { \"Content-Type\": \"application/json\" },",
+					"            };",
+					"",
+					"            if(verbose) {",
+					"                console.log(\"Отправляю запрос: \", request);",
+					"            }",
+					"",
+					"            try {",
+					"                this.pm.sendRequest(request, (error, response) => {",
+					"                    if(error || (response.code >= 400 && response.code <= 599)) {",
+					"                        let err = error ? error : JSON.stringify(response.json());",
+					"                        console.error(\"При выполнении запроса к серверу возникла ошика.\\n\", err,",
+					"                             \"\\nДля отладки проблемы повторите такой же запрос к вашей программе \" + ",
+					"                             \"на локальном компьютере. Данные запроса:\\n\", JSON.stringify(request));",
+					"",
+					"                        reject(new Error(errorText + err));",
+					"                    }",
+					"",
+					"                    if(verbose) {",
+					"                        console.log(\"Результат обработки запроса: код состояния - \", response.code, \", тело: \", response.json());",
+					"                    }",
+					"",
+					"                    resolve(response.json());",
+					"                });",
+					"            } catch(err) {",
+					"                if(verbose) {",
+					"                    console.error(errorText, err);",
+					"                }",
+					"                return Promise.reject(err);",
+					"            }",
+					"        });",
+					"    }",
+					"};",
+					"",
+					"RandomUtils = class {",
+					"    constructor() {}",
+					"",
+					"    getUser() {",
+					"        return {",
+					"            name: pm.variables.replaceIn('{{$randomFullName}}'),",
+					"            email: pm.variables.replaceIn('{{$randomEmail}}')",
+					"        };",
+					"    }",
+					"",
+					"    getCategory() {",
+					"        return {",
+					"            name: pm.variables.replaceIn('{{$randomWord}}') + Math.floor(Math.random() * 100).toString()",
+					"        };",
+					"    }",
+					"",
+					"    getEvent(categoryId) {",
+					"        return {",
+					"            annotation: pm.variables.replaceIn('{{$randomLoremParagraph}}'),",
+					"            category: categoryId,",
+					"            description: pm.variables.replaceIn('{{$randomLoremParagraphs}}'),",
+					"            eventDate: this.getFutureDateTime(),",
+					"            location: {",
+					"                lat: parseFloat(pm.variables.replaceIn('{{$randomLatitude}}')),",
+					"                lon: parseFloat(pm.variables.replaceIn('{{$randomLongitude}}')),",
+					"            },",
+					"            paid: pm.variables.replaceIn('{{$randomBoolean}}'),",
+					"            participantLimit: pm.variables.replaceIn('{{$randomInt}}'),",
+					"            requestModeration: pm.variables.replaceIn('{{$randomBoolean}}'),",
+					"            title: pm.variables.replaceIn('{{$randomLoremSentence}}'),",
+					"        }",
+					"    }",
+					"",
+					"    getSubscribe(subscriber, signatory, event) {",
+					"        return {",
+					"            id: pm.variables.replaceIn('{{$randomInt}}'),",
+					"            subscriber: subscriber,",
+					"            signatory: signatory,",
+					"            event: event,",
+					"            status: 'PENDING',",
+					"        }",
+					"    }",
+					"",
+					"    getCompilation(...eventIds) {",
+					"        return {",
+					"            title: pm.variables.replaceIn('{{$randomLoremSentence}}'),",
+					"            pinned: pm.variables.replaceIn('{{$randomBoolean}}'),",
+					"            events: eventIds",
+					"        };",
+					"    }",
+					"",
+					"    getFutureDateTime(hourShift = 5, minuteShift=0, yearShift=0) {",
+					"        let moment = require('moment');",
+					"",
+					"        let m = moment();",
+					"        m.add(hourShift, 'hour');",
+					"        m.add(minuteShift, 'minute');",
+					"        m.add(yearShift, 'year');",
+					"",
+					"        return m.format('YYYY-MM-DD HH:mm:ss');",
+					"    }",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "name",
+			"value": ""
+		},
+		{
+			"key": "usersCount",
+			"value": 1,
+			"type": "number"
+		},
+		{
+			"key": "catid",
+			"value": 1,
+			"type": "number"
+		},
+		{
+			"key": "request_body",
+			"value": ""
+		},
+		{
+			"key": "mail",
+			"value": ""
+		},
+		{
+			"key": "response",
+			"value": ""
+		},
+		{
+			"key": "uid",
+			"value": 1,
+			"type": "number"
+		},
+		{
+			"key": "catname",
+			"value": ""
+		},
+		{
+			"key": "eid",
+			"value": 1,
+			"type": "number"
+		},
+		{
+			"key": "compid",
+			"value": 1,
+			"type": "number"
+		},
+		{
+			"key": "toCheck",
+			"value": ""
+		},
+		{
+			"key": "newDataToSet",
+			"value": ""
+		},
+		{
+			"key": "uid1",
+			"value": ""
+		},
+		{
+			"key": "reqid",
+			"value": 1,
+			"type": "number"
+		},
+		{
+			"key": "catId",
+			"value": ""
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "subscriberId",
+			"value": "{{subscriberId}}"
+		},
+		{
+			"key": "signatoryId",
+			"value": "{{signatoryId}}"
+		},
+		{
+			"key": "eventId",
+			"value": "{{eventId}}"
+		},
+		{
+			"key": "id",
+			"value": "{{id}}"
+		},
+		{
+			"key": "subscriptionId",
+			"value": "{{subscriptionId}}"
+		}
+	]
+}
